@@ -35,7 +35,9 @@ private:
 
 	// Behaviours
 	Vector3 seek(Vector3& target);
-	Vector3 seperate(std::vector<Boid*> _boids);
-	Vector3 align(std::vector<Boid*> _boids);
-	Vector3 cohesion(std::vector<Boid*> _boids);
+	Vector3 seperate(std::vector<Boid*>& _boids);
+	Vector3 align(std::vector<Boid*>& _boids);
+	Vector3 cohesion(std::vector<Boid*>& _boids);
+
+	Vector3 ClampVector(Vector3& _vector);
 };

@@ -111,8 +111,8 @@ Game::Game(ID3D11Device* _pd3dDevice, HWND _hWnd, HINSTANCE _hInstance)
 	m_GameObjects.push_back(terrainBox);*/
 	m_GameObjects.push_back(new Tree(4, 4, .6f, 10.0f *Vector3::Up, XM_PI / 6.0f, "JEMINA vase -up.cmo", _pd3dDevice, m_fxFactory));
 
-	maxBoids = 5;
-	m_boidManager = std::make_unique<BoidManager>("BirdModelV1.cmo", _pd3dDevice, m_fxFactory, maxBoids);
+	maxBoids = 100;
+	m_boidManager = std::make_unique<BoidManager>(_pd3dDevice, maxBoids);
 };
 
 
@@ -232,7 +232,7 @@ void Game::PlayTick()
 	if ((m_keyboardState[DIK_Z] & 0x80) &&
 		!(m_prevKeyboardState[DIK_Z] & 0x80))
 	{
-		m_boidManager->spawnBoid(maxBoids);
+		m_boidManager->spawnBoid();
 	}
 
 	//update all objects
