@@ -57,13 +57,16 @@ protected:
 	IEffectFactory* m_fxFactory;
 
 	//direct input stuff
-	bool ReadInput(); //Get current Mouse and Keyboard states
+	bool Game::readKeyboard(); //Get current Keyboard state
+	bool Game::readMouse();    //Get current Keyboard state
+
 	IDirectInput8*			m_pDirectInput;
 	IDirectInputDevice8*	m_pKeyboard;
 	IDirectInputDevice8*	m_pMouse;
 	unsigned char			m_keyboardState[256];
 	unsigned char			m_prevKeyboardState[256];
 	DIMOUSESTATE			m_mouseState;
+	DIMOUSESTATE			m_prevMouseState;
 	HWND m_hWnd;
 
 	GameData* m_GD;			//Data to be shared to all Game Objects as they are ticked

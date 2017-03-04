@@ -1,9 +1,11 @@
 #include "VBBoidPrey.h"
 
+#include <iostream>
+
 
 VBBoidPrey::VBBoidPrey()
 {
-	desiredSeperation = 10.0f;
+	desiredSeperation = 3.0f;
 
 	acceleration = Vector3::Zero;
 
@@ -18,19 +20,44 @@ VBBoidPrey::VBBoidPrey()
 
 	velocity = Vector3(angle1, angle2, angle3);
 
-	maxSpeed = 0.3f;
+	maxSpeed = 0.5f;
 	maxForce = 0.03f;
 
 	neighbourDistance = 25.0f;
 
-	m_pos = Vector3::Zero;
+	float posX = randomFloat(-35.0f, 35.0f);
+	float posY = randomFloat(-35.0f, 35.0f);
+	float posZ = randomFloat(-35.0f, 35.0f);
+
+	m_pos = Vector3(posX, posY, posZ);
 
 	isActive = false;
+
+	zoneSize = 60;
+
+	m_worldMat = Matrix::Identity;
+	m_fudge = Matrix::Identity;
+	//m_fudge = Matrix::CreateRotationY(XM_PI * 0.5f);
+	m_up = Vector3::Up;
 }
 
-void VBBoidPrey::init(int _size, ID3D11Device* GD)
+
+
+VBBoidPrey::~VBBoidPrey()
 {
-	m_size = _size;
+	delete m_vertices;
+	m_vertices = nullptr;
+}
+
+
+
+void VBBoidPrey::init(ID3D11Device* GD)
+{
+	boidRed = randomFloat(0.0f, 1.0f);
+	boidBlue = randomFloat(0.0f, 1.0f);
+	boidGreen = randomFloat(0.0f, 1.0f);
+
+	std::cout << boidRed << "  " << boidBlue << "  " << boidGreen << std::endl;
 
 	//calculate number of vertices and primatives
 	int numVerts = 12;
@@ -46,35 +73,35 @@ void VBBoidPrey::init(int _size, ID3D11Device* GD)
 	}
 
 	//in each loop create the two traingles for the matching sub-square on each of the six faces
-	int vert = 0;
+	vert = 0;
 
-	m_vertices[vert].Color = Color(0.0f, 1.0f, 1.0f, 1.0f);
+	m_vertices[vert].Color = Color(boidRed, boidBlue, boidGreen, 1.0f);
 	m_vertices[vert++].Pos = Vector3(0.0f, 0.0f, 0.0f);
-	m_vertices[vert].Color = Color(0.0f, 1.0f, 1.0f, 1.0f); // BottomFace 
+	m_vertices[vert].Color = Color(boidRed, boidBlue, boidGreen, 1.0f); // BottomFace 
 	m_vertices[vert++].Pos = Vector3(5.0f, 0.f, 0.0f);
-	m_vertices[vert].Color = Color(0.0f, 1.0f, 1.0f, 1.0f);
-	m_vertices[vert++].Pos = Vector3(2.5f, 0.0f, -5.0f);
+	m_vertices[vert].Color = Color(boidRed, boidBlue, boidGreen, 1.0f);
+	m_vertices[vert++].Pos = Vector3(2.5f, 0.0f, 5.0f);
 
-	m_vertices[vert].Color = Color(0.0f, 1.0f, 1.0f, 1.0f);
-	m_vertices[vert++].Pos = Vector3(0.0f, 0.0f, 0.0f);
-	m_vertices[vert].Color = Color(0.0f, 1.0f, 1.0f, 1.0f); // FlatFace
+	m_vertices[vert].Color = Color(boidRed, boidBlue, boidGreen, 1.0f);
 	m_vertices[vert++].Pos = Vector3(5.0f, 0.0f, 0.0f);
-	m_vertices[vert].Color = Color(0.0f, 1.0f, 1.0f, 1.0f);
-	m_vertices[vert++].Pos = Vector3(2.5f, 1.25f, 0.0f);
-
-	m_vertices[vert].Color = Color(0.0f, 1.0f, 1.0f, 1.0f);
-	m_vertices[vert++].Pos = Vector3(2.5f, 0.0f, -5.0f);
-	m_vertices[vert].Color = Color(0.0f, 1.0f, 1.0f, 1.0f); // Face2
+	m_vertices[vert].Color = Color(boidRed, boidBlue, boidGreen, 1.0f); // FlatFace
 	m_vertices[vert++].Pos = Vector3(0.0f, 0.0f, 0.0f);
-	m_vertices[vert].Color = Color(0.0f, 1.0f, 1.0f, 1.0f);
+	m_vertices[vert].Color = Color(boidRed, boidBlue, boidGreen, 1.0f);
 	m_vertices[vert++].Pos = Vector3(2.5f, 1.25f, 0.0f);
 
-	m_vertices[vert].Color = Color(0.0f, 1.0f, 1.0f, 1.0f);
-	m_vertices[vert++].Pos = Vector3(5.0f, 0.0f, 0.0f);
-	m_vertices[vert].Color = Color(0.0f, 1.0f, 1.0f, 1.0f); // Face3
-	m_vertices[vert++].Pos = Vector3(2.5f, 0.0f, -5.0f);
-	m_vertices[vert].Color = Color(0.0f, 1.0f, 1.0f, 1.0f);
+	m_vertices[vert].Color = Color(boidRed, boidBlue, boidGreen, 1.0f);
+	m_vertices[vert++].Pos = Vector3(2.5f, 0.0f, 5.0f);
+	m_vertices[vert].Color = Color(boidRed, boidBlue, boidGreen, 1.0f); // Face2
 	m_vertices[vert++].Pos = Vector3(2.5f, 1.25f, 0.0f);
+	m_vertices[vert].Color = Color(boidRed, boidBlue, boidGreen, 1.0f);
+	m_vertices[vert++].Pos = Vector3(0.0f, 0.0f, 0.0f);
+
+	m_vertices[vert].Color = Color(boidRed, boidBlue, boidGreen, 1.0f);
+	m_vertices[vert++].Pos = Vector3(2.5f, 1.25f, 0.0f);
+	m_vertices[vert].Color = Color(boidRed, boidBlue, boidGreen, 1.0f); // Face3
+	m_vertices[vert++].Pos = Vector3(2.5f, 0.0f, 5.0f);
+	m_vertices[vert].Color = Color(boidRed, boidBlue, boidGreen, 1.0f);
+	m_vertices[vert++].Pos = Vector3(5.0f, 0.0f, 0.0f);
 
 	//carry out some kind of transform on these vertices to make this object more interesting
 	Transform();
@@ -130,8 +157,10 @@ void VBBoidPrey::flock(std::vector<VBBoidPrey*>& _boids)
 	Vector3 ali = align(_boids);     // Alignment
 	Vector3 coh = cohesion(_boids);  // Cohesion
 
+	//groupColor(_boids);            // Function not currently working...
+
 									 // Arbitrarily weight these force
-	sep *= 1.5f;
+	sep *= 1.25f;
 	ali *= 1.0;
 	coh *= 1.0f;
 	applyForce(sep);
@@ -156,16 +185,20 @@ void VBBoidPrey::Tick(GameData* _GD)
 	velocity = XMVector3Normalize(velocity);
 
 	velocity = XMVector3ClampLength(velocity, 0.0f, maxSpeed);
-	//velocity.Clamp(Vector3(0.0f,0.0f,0.0f), Vector3(0.2f,0.2f,0.2f));
 
 	m_pos = (m_pos + velocity);
 
-	//transform.rotation = Quaternion.LookRotation(velocity);
+	Matrix scaleMat = Matrix::CreateScale(m_scale);
+	Matrix rotTransMat = Matrix::CreateWorld(m_pos, -velocity, m_up);
+
+	m_worldMat = m_fudge * scaleMat * rotTransMat;
+
+	checkPosition();
 
 	// reset acceleration to 0 each cycle
 	acceleration = Vector3::Zero;
 
-	VBGO::Tick(_GD);
+	//VBGO::Tick(_GD);
 }
 
 
@@ -174,7 +207,7 @@ void VBBoidPrey::Tick(GameData* _GD)
 Vector3 VBBoidPrey::seek(Vector3& target)
 {
 	// A Vector pointing from the position to the target
-	Vector3 desired = (target - m_pos);
+	desired = (target - m_pos);
 
 	// Scale to max Speed
 	desired = XMVector3Normalize(desired);
@@ -203,13 +236,13 @@ Vector3 VBBoidPrey::seperate(std::vector<VBBoidPrey*>& _boids)
 	{
 		if (_boids[i]->isActive == true)
 		{
-			float d = Vector3::Distance(m_pos, _boids[i]->GetPos());
+			float d = Vector3::Distance(m_pos, _boids[i]->getPos());
 
 			// if Boid is a neighbour
 			if (d > 0 && d < desiredSeperation)
 			{
 				// Calculate vector pointing away from neighbour
-				Vector3 diff = (m_pos - _boids[i]->GetPos());
+				Vector3 diff = (m_pos - _boids[i]->getPos());
 				diff = XMVector3Normalize(diff);
 				diff = (diff / d); // Weight by distance
 				steer = (steer + diff);
@@ -253,7 +286,7 @@ Vector3 VBBoidPrey::align(std::vector<VBBoidPrey*>& _boids)
 	{
 		if (_boids[i]->isActive == true)
 		{
-			float d = Vector3::Distance(m_pos, _boids[i]->GetPos());
+			float d = Vector3::Distance(m_pos, _boids[i]->getPos());
 
 			// if Boid is a neighbour
 			if (d > 0 && d < neighbourDistance)
@@ -296,12 +329,12 @@ Vector3 VBBoidPrey::cohesion(std::vector<VBBoidPrey*>& _boids)
 	{
 		if (_boids[i]->isActive == true)
 		{
-			float d = Vector3::Distance(m_pos, _boids[i]->GetPos());
+			float d = Vector3::Distance(m_pos, _boids[i]->getPos());
 
 			// if Boid is a neighbour
 			if (d > 0 && d < neighbourDistance)
 			{
-				sum = (sum + _boids[i]->GetPos());
+				sum = (sum + _boids[i]->getPos());
 				count++;
 			}
 		}
@@ -319,9 +352,70 @@ Vector3 VBBoidPrey::cohesion(std::vector<VBBoidPrey*>& _boids)
 
 
 
+void VBBoidPrey::groupColor(std::vector<VBBoidPrey*>& _boids)
+{
+	float redSum = 0; // start with an empty vector to accumulate all positions
+	float blueSum = 0;
+	float greenSum = 0;
+	int count = 0;
+
+	for (int i = 0; i < _boids.size(); i++)
+	{
+		if (_boids[i]->isActive == true)
+		{
+			float d = Vector3::Distance(m_pos, _boids[i]->getPos());
+
+			// if Boid is a neighbour
+			if (d > 0 && d < neighbourDistance)
+			{
+				redSum = (redSum + _boids[i]->getRed());
+				blueSum = (blueSum + _boids[i]->getBlue());
+				greenSum = (greenSum + _boids[i]->getGreen());
+				count++;
+			}
+		}
+	}
+
+	if (count > 0)
+	{
+		redSum = (redSum / count);
+		blueSum = (blueSum / count);
+		greenSum = (greenSum / count);
+
+		for (int i = 0; i < vert; i++)
+		{
+			//m_vertices[i].Color = Color(redSum, blueSum, greenSum, 1.0f);
+			//m_VertexBuffer->GetDesc();// = Color(redSum, blueSum, greenSum, 1.0f);
+		}
+	}
+}
+
+
+
 Vector3 VBBoidPrey::getVelocity()
 {
 	return velocity;
+}
+
+
+
+float VBBoidPrey::getRed()
+{
+	return boidRed;
+}
+
+
+
+float VBBoidPrey::getBlue()
+{
+	return boidBlue;
+}
+
+
+
+float VBBoidPrey::getGreen()
+{
+	return boidGreen;
 }
 
 
@@ -330,4 +424,42 @@ float VBBoidPrey::randomFloat(float _min, float _max)
 {
 	float r = (float)rand() / (float)RAND_MAX;
 	return _min + r * (_max - _min);
+}
+
+
+
+void VBBoidPrey::checkPosition()
+{
+	// Check X axis
+	if (m_pos.x < -zoneSize)
+	{
+		m_pos.x = zoneSize;
+	}
+
+	if (m_pos.x > zoneSize)
+	{
+		m_pos.x = -zoneSize;
+	}
+
+	// Check Y axis
+	if (m_pos.y < -zoneSize)
+	{
+		m_pos.y = zoneSize;
+	}
+
+	if (m_pos.y > zoneSize)
+	{
+		m_pos.y = -zoneSize;
+	}	
+	
+	// Check Z axis
+	if (m_pos.z < -zoneSize)
+	{
+		m_pos.z = zoneSize;
+	}
+
+	if (m_pos.z > zoneSize)
+	{
+		m_pos.z = -zoneSize;
+	}
 }

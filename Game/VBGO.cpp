@@ -238,7 +238,7 @@ void VBGO::UpdateConstantBuffer(DrawData* _DD)
 	if (_DD->m_light)
 	{
 		s_pCB->lightCol = _DD->m_light->GetColour();
-		s_pCB->lightPos = _DD->m_light->GetPos();
+		s_pCB->lightPos = _DD->m_light->getPos();
 		s_pCB->ambientCol = _DD->m_light->GetAmbCol();
 	}
 }

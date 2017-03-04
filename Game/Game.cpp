@@ -19,7 +19,7 @@ using namespace DirectX::SimpleMath;
 
 Game::Game(ID3D11Device* _pd3dDevice, HWND _hWnd, HINSTANCE _hInstance) 
 {
-	srand(time(NULL));
+	//srand(time(NULL));
 	
 	//set up audio
 	CoInitializeEx(nullptr, COINIT_MULTITHREADED);
@@ -85,7 +85,7 @@ Game::Game(ID3D11Device* _pd3dDevice, HWND _hWnd, HINSTANCE _hInstance)
 
 	//create a base camera
 	m_cam = new Camera(0.25f * XM_PI, AR, 1.0f, 10000.0f, Vector3::UnitY, Vector3::Zero);
-	m_cam->SetPos(Vector3(0.0f, 100.0f, 100.0f));
+	m_cam->SetPos(Vector3(0.0f, 0.0f, 150.0f));
 	m_GameObjects.push_back(m_cam);
 
 	//create a base light
@@ -97,7 +97,7 @@ Game::Game(ID3D11Device* _pd3dDevice, HWND _hWnd, HINSTANCE _hInstance)
 	m_GameObjects.push_back(pPlayer);
 
 	//add a secondary camera
-	m_TPScam = new TPSCamera(0.25f * XM_PI, AR, 1.0f, 10000.0f, pPlayer, Vector3::UnitY, Vector3(0.0f, 10.0f, 50.0f));
+	m_TPScam = new TPSCamera(0.25f * XM_PI, AR, 1.0f, 10000.0f, Vector3::UnitY, Vector3(0.0f, 10.0f, 120.0f));
 	m_GameObjects.push_back(m_TPScam);
 
 	//create DrawData struct and populate its pointers
@@ -112,7 +112,7 @@ Game::Game(ID3D11Device* _pd3dDevice, HWND _hWnd, HINSTANCE _hInstance)
 	m_GameObjects.push_back(new Tree(4, 4, .6f, 10.0f *Vector3::Up, XM_PI / 6.0f, "JEMINA vase -up.cmo", _pd3dDevice, m_fxFactory));
 
 	maxBoids = 100;
-	m_boidManager = std::make_unique<BoidManager>(_pd3dDevice, maxBoids);
+	m_boidManager = std::make_unique<BoidManager>(_pd3dDevice, maxBoids/*, "BirdModelV1.cmo", m_fxFactory*/);
 };
 
 
@@ -166,6 +166,12 @@ Game::~Game()
 
 bool Game::Tick() 
 {
+	//Poll Keyboard
+	readKeyboard();
+
+	// Poll Mouse
+	readMouse();
+
 	//tick audio engine
 	if (!m_audioEngine->Update())
 	{
@@ -176,9 +182,6 @@ bool Game::Tick()
 			return false;
 		}
 	}
-
-	//Poll Keyboard & Mouse
-	ReadInput();
 
 	//Upon pressing escape QUIT
 	if (m_keyboardState[DIK_ESCAPE] & 0x80)
@@ -231,6 +234,12 @@ void Game::PlayTick()
 
 	if ((m_keyboardState[DIK_Z] & 0x80) &&
 		!(m_prevKeyboardState[DIK_Z] & 0x80))
+	{
+		//m_boidManager->spawnBoid();
+	}
+
+	if ((m_mouseState.rgbButtons[0] & 0x80)/* &&
+		!(m_prevMouseState.rgbButtons[0] & 0x80)*/)
 	{
 		m_boidManager->spawnBoid();
 	}
@@ -285,44 +294,60 @@ void Game::Draw(ID3D11DeviceContext* _pd3dImmediateContext)
 
 
 
-bool Game::ReadInput()
+bool Game::readKeyboard()
 {
-	//copy over old keyboard state
+	// Copy over old keyboard state
 	memcpy(m_prevKeyboardState, m_keyboardState, sizeof(unsigned char) * 256);
 
-	//clear out previous state
-	ZeroMemory(&m_keyboardState, sizeof(unsigned char) * 256);
-	ZeroMemory(&m_mouseState, sizeof(DIMOUSESTATE));
+	// clear out previous state
+	ZeroMemory(&m_keyboardState, sizeof(m_keyboardState));
 
-	// Read the keyboard device.
-	HRESULT hr = m_pKeyboard->GetDeviceState(sizeof(m_keyboardState), (LPVOID)&m_keyboardState);
+	// Read the keyboard device
+	HRESULT hr = m_pKeyboard->GetDeviceState(sizeof(m_keyboardState),
+		(LPVOID)&m_keyboardState);
 	if (FAILED(hr))
 	{
-		// If the keyboard lost focus or was not acquired then try to get control back.
+		// If the keyboard lost focus or was not acquired
+		// then try to get control back
 		if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
 		{
 			m_pKeyboard->Acquire();
 		}
+
 		else
 		{
 			return false;
 		}
 	}
+	return true;
+}
 
-	// Read the Mouse device.
-	hr = m_pMouse->GetDeviceState(sizeof(DIMOUSESTATE), (LPVOID)&m_mouseState);
+
+
+bool Game::readMouse()
+{
+	// Set previous mouse state
+	m_prevMouseState = m_mouseState;
+
+	// clear out previous state
+	ZeroMemory(&m_mouseState, sizeof(m_mouseState));
+
+	// Read the mouse device
+	HRESULT hr = m_pMouse->GetDeviceState(sizeof(m_mouseState),
+		(LPVOID)&m_mouseState);
 	if (FAILED(hr))
 	{
-		// If the Mouse lost focus or was not acquired then try to get control back.
+		// If the mouse lost focus or was not acquired
+		// then try to get control back
 		if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
 		{
 			m_pMouse->Acquire();
 		}
+
 		else
 		{
 			return false;
 		}
 	}
-
 	return true;
 }

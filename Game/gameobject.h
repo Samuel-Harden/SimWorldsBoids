@@ -26,12 +26,12 @@ public:
 	virtual void Draw(DrawData* _DD) = 0;
 
 	//getters
-	Vector3		GetPos() { return m_pos; }
 	Vector3		GetScale() { return m_scale; }
 
-	float		GetPitch() { return m_pitch; }
-	float		GetYaw() { return m_yaw; }
-	float		GetRoll() { return m_roll; }
+	Vector3 getPos() const;
+	float getYaw() const;
+	float getPitch() const;
+	float getRoll() const;
 
 	bool		IsPhysicsOn() { return m_physicsOn; }
 	float		GetDrag() { return m_drag; }

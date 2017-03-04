@@ -41,3 +41,31 @@ void GameObject::Tick(GameData* _GD)
 	//zero acceleration ready for the next time round
 	m_acc = Vector3::Zero;
 }
+
+
+
+Vector3 GameObject::getPos() const
+{
+	return m_pos;
+}
+
+
+
+float GameObject::getYaw() const
+{
+	return m_yaw;
+}
+
+
+
+float GameObject::getPitch() const
+{
+	return m_pitch;
+}
+
+
+
+float GameObject::getRoll() const
+{
+	return m_roll;
+}

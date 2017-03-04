@@ -6,7 +6,7 @@
 
 Boid::Boid(string _fileName, ID3D11Device* _pd3dDevice, IEffectFactory* _EF) : CMOGO(_fileName, _pd3dDevice, _EF)
 {
-	desiredSeperation = 10.0f;
+	desiredSeperation = 5.0f;;
 
 	acceleration = Vector3::Zero;
 
@@ -29,6 +29,8 @@ Boid::Boid(string _fileName, ID3D11Device* _pd3dDevice, IEffectFactory* _EF) : C
 	m_pos = Vector3::Zero;
 
 	isActive = false;
+
+	zoneSize = 30;
 }
 
 
@@ -87,14 +89,36 @@ void Boid::Tick(GameData* _GD)
 	velocity = XMVector3Normalize(velocity);
 
 	velocity = XMVector3ClampLength(velocity, 0.0f, maxSpeed);
-	//velocity.Clamp(Vector3(0.0f,0.0f,0.0f), Vector3(0.2f,0.2f,0.2f));
 
+	//m_dir = velocity - m_pos;
+
+	//direction = m_pos - velocity;
+	//direction.Normalize();
+
+	//m_pos += direction;
 	m_pos = (m_pos + velocity);
 
-	//transform.rotation = Quaternion.LookRotation(velocity);
+	//Matrix scaleMat = Matrix::CreateScale(m_scale);
+	//Matrix rotTransMat = Matrix::CreateWorld(m_pos, m_dir, Vector3::Up);
 
-	// reset acceleration to 0 each cycle
+	//m_worldMat = m_fudge * scaleMat * rotTransMat;
+
+	// Position, (Pos + Direction), up
+	//m_viewMat = Matrix::CreateLookAt(m_pos, Vector3(12.0f, 12.0f, 12.0f), Vector3::Up);
+	//m_viewMat.Invert();
+
+	//build up the world matrix depending on the new position of the GameObject
+	//the assumption is that this class will be inherited by the class that ACTUALLY changes this
+	//Matrix  scaleMat = Matrix::CreateScale(m_scale);
+	//m_rotMat = Matrix::CreateFromYawPitchRoll(m_yaw, m_pitch, m_roll); //possible not the best way of doing this!
+	//Matrix  transMat = Matrix::CreateTranslation(m_pos);
+
+	//m_worldMat = m_fudge * scaleMat * m_rotMat * transMat;// * m_viewMat;
+
+    // reset acceleration to 0 each cycle
 	acceleration = Vector3::Zero;
+
+	checkPosition();
 
 	CMOGO::Tick(_GD);
 }
@@ -134,13 +158,13 @@ Vector3 Boid::seperate(std::vector<Boid*>& _boids)
 	{
 		if (_boids[i]->isActive == true)
 		{
-			float d = Vector3::Distance(m_pos, _boids[i]->GetPos());
+			float d = Vector3::Distance(m_pos, _boids[i]->getPos());
 
 			// if Boid is a neighbour
 			if (d > 0 && d < desiredSeperation)
 			{
 				// Calculate vector pointing away from neighbour
-				Vector3 diff = (m_pos - _boids[i]->GetPos());
+				Vector3 diff = (m_pos - _boids[i]->getPos());
 				diff = XMVector3Normalize(diff);
 				diff = (diff / d); // Weight by distance
 				steer = (steer + diff);
@@ -184,7 +208,7 @@ Vector3 Boid::align(std::vector<Boid*>& _boids)
 	{
 		if (_boids[i]->isActive == true)
 		{
-			float d = Vector3::Distance(m_pos, _boids[i]->GetPos());
+			float d = Vector3::Distance(m_pos, _boids[i]->getPos());
 
 			// if Boid is a neighbour
 			if (d > 0 && d < neighbourDistance)
@@ -227,12 +251,12 @@ Vector3 Boid::cohesion(std::vector<Boid*>& _boids)
 	{
 		if (_boids[i]->isActive == true)
 		{
-			float d = Vector3::Distance(m_pos, _boids[i]->GetPos());
+			float d = Vector3::Distance(m_pos, _boids[i]->getPos());
 
 			// if Boid is a neighbour
 			if (d > 0 && d < neighbourDistance)
 			{
-				sum = (sum + _boids[i]->GetPos());
+				sum = (sum + _boids[i]->getPos());
 				count++;
 			}
 		}
@@ -270,4 +294,42 @@ Vector3 Boid::ClampVector(Vector3& _vector)
 {
 	Vector3 newVector = Vector3((_vector.x * _vector.x) + (_vector.y * _vector.y) + (_vector.z * _vector.z));
 	return newVector;
+}
+
+
+
+void Boid::checkPosition()
+{
+	// Check X axis
+	if (m_pos.x < -zoneSize)
+	{
+		m_pos.x = zoneSize;
+	}
+
+	if (m_pos.x > zoneSize)
+	{
+		m_pos.x = -zoneSize;
+	}
+
+	// Check Y axis
+	if (m_pos.y < -zoneSize)
+	{
+		m_pos.y = zoneSize;
+	}
+
+	if (m_pos.y > zoneSize)
+	{
+		m_pos.y = -zoneSize;
+	}
+
+	// Check Z axis
+	if (m_pos.z < -zoneSize)
+	{
+		m_pos.z = zoneSize;
+	}
+
+	if (m_pos.z > zoneSize)
+	{
+		m_pos.z = -zoneSize;
+	}
 }
