@@ -1,23 +1,22 @@
 #include "BoidManager.h"
-#include "VBBoidPrey.h"
+#include "BoidPrey.h"
 #include "Boid.h"
 #include "GameData.h"
 #include "DrawData.h"
 
 
 
-BoidManager::BoidManager(ID3D11Device* _pd3dDevice, int& _maxBoids/*, std::string _fileName, DirectX::IEffectFactory* _EF*/)
+BoidManager::BoidManager(ID3D11Device* _pd3dDevice, int& _maxBoids)
 	: currentNoBoids (0)
 {
-	//currentNoBoids = 0;
-	boids.reserve(_maxBoids);
+	preyboids.reserve(_maxBoids);
 
 	for (int i = 0; i < _maxBoids; i++)
 	{
-		boid = new VBBoidPrey();//(_fileName, _pd3dDevice, _EF);
+		boid = new BoidPrey();
 		boid->init(_pd3dDevice);
 		boid->SetScale(0.5f);
-		boids.push_back(boid);
+		preyboids.push_back(boid);
 		currentNoBoids++;
 	}
 }
@@ -27,19 +26,19 @@ BoidManager::BoidManager(ID3D11Device* _pd3dDevice, int& _maxBoids/*, std::strin
 BoidManager::~BoidManager()
 {
 	// Tidy away stuf here
-	for (std::vector<VBBoidPrey*>::iterator it = boids.begin(); it != boids.end(); it++)
+	for (std::vector<BoidPrey*>::iterator it = preyboids.begin(); it != preyboids.end(); it++)
 	{
 		delete (*it);
 		(*it) = nullptr;
 	}
-	boids.clear();
+	preyboids.clear();
 }
 
 
 
 void BoidManager::Tick(GameData* _GD)
 {
-	setBoids(_GD);
+	setPreyBoids(_GD);
 }
 
 
@@ -48,22 +47,22 @@ void BoidManager::Draw(DrawData* _DD)
 {
 	for (int i = 0; i < currentNoBoids; i++)
 	{
-		if (boids[i]->isActive == true)
+		if (preyboids[i]->isActive == true)
 		{
-			boids[i]->Draw(_DD);
+			preyboids[i]->Draw(_DD);
 		}
 	}
 }
 
 
 
-void BoidManager::setBoids(GameData* _GD)
+void BoidManager::setPreyBoids(GameData* _GD)
 {
 	for (int i = 0; i < currentNoBoids; i++)
 	{
-		if (boids[i]->isActive == true)
+		if (preyboids[i]->isActive == true)
 		{
-			boids[i]->run(boids, _GD);
+			preyboids[i]->run(preyboids, _GD);
 		}
 	}
 }
@@ -72,11 +71,11 @@ void BoidManager::setBoids(GameData* _GD)
 
 void BoidManager::spawnBoid()
 {
-	for (int i = 0; i < boids.size(); i++)
+	for (int i = 0; i < preyboids.size(); i++)
 	{
-		if (boids[i]->isActive == false)
+		if (preyboids[i]->isActive == false)
 		{
-			boids[i]->activateBoid();
+			preyboids[i]->activateBoid();
 			return;
 		}
 	}

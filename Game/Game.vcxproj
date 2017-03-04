@@ -129,6 +129,7 @@
     <ClInclude Include="DrawData2D.h" />
     <ClInclude Include="DrawData.h" />
     <ClInclude Include="fileVBGO.h" />
+    <ClInclude Include="FreeCamera.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameData.h" />
     <ClInclude Include="gameobject.h" />
@@ -145,10 +146,11 @@
     <ClInclude Include="TPSCamera.h" />
     <ClInclude Include="Tree.h" />
     <ClInclude Include="TreeBit.h" />
-    <ClInclude Include="VBBoidPrey.h" />
+    <ClInclude Include="BoidPrey.h" />
     <ClInclude Include="VBCube.h" />
     <ClInclude Include="VBGO.h" />
     <ClInclude Include="VBPillow.h" />
+    <ClInclude Include="PredatorBoid.h" />
     <ClInclude Include="VBSnail.h" />
     <ClInclude Include="VBSpiked.h" />
     <ClInclude Include="VBspiral.h" />
@@ -160,9 +162,11 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="CMOGO.cpp" />
     <ClCompile Include="fileVBGO.cpp" />
+    <ClCompile Include="FreeCamera.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="gameobject.cpp" />
     <ClCompile Include="GameObject2D.cpp" />
+    <ClCompile Include="GameState.cpp" />
     <ClCompile Include="ImageGO2D.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="MarchCubes.cpp" />
@@ -172,9 +176,10 @@
     <ClCompile Include="TPSCamera.cpp" />
     <ClCompile Include="Tree.cpp" />
     <ClCompile Include="treebit.cpp" />
-    <ClCompile Include="VBBoidPrey.cpp" />
+    <ClCompile Include="BoidPrey.cpp" />
     <ClCompile Include="VBCube.cpp" />
     <ClCompile Include="VBGO.cpp" />
+    <ClCompile Include="PredatorBoid.cpp" />
     <ClCompile Include="VBSnail.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

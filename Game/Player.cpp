@@ -23,7 +23,7 @@ void Player::Tick(GameData* _GD)
 {
 
 	//TURN AND FORWARD CONTROL HERE
-	Vector3 forwardMove = 40.0f * Vector3::Forward;
+	Vector3 forwardMove = 20.0f * Vector3::Forward;
 	Matrix rotMove = Matrix::CreateRotationY(m_yaw);
 	forwardMove = Vector3::Transform(forwardMove, rotMove);
 
@@ -50,12 +50,12 @@ void Player::Tick(GameData* _GD)
 	//move player up and down
 	if (_GD->m_keyboardState[DIK_R] & 0x80)
 	{
-		m_acc.y += 40.0f;
+		m_acc.y += 20.0f;
 	}
 
 	if (_GD->m_keyboardState[DIK_F] & 0x80)
 	{
-		m_acc.y -= 40.0f;
+		m_acc.y -= 20.0f;
 	}
 
 	//limit motion of the player
@@ -67,6 +67,9 @@ void Player::Tick(GameData* _GD)
 		m_pos *= maxLength;
 		m_vel *= -0.9; //VERY simple bounce back
 	}
+
+	// Set players pos as that of the predator
+	_GD->predatorPos = m_pos;
 
 	//apply my base behaviour
 	CMOGO::Tick(_GD);

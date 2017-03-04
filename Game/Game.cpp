@@ -57,7 +57,6 @@ Game::Game(ID3D11Device* _pd3dDevice, HWND _hWnd, HINSTANCE _hInstance)
 	m_GD = new GameData;
 	m_GD->m_keyboardState = m_keyboardState;
 	m_GD->m_prevKeyboardState = m_prevKeyboardState;
-	m_GD->m_GS = GS_PLAY_TPS_CAM;
 	m_GD->m_mouseState = &m_mouseState;
 
 	//set up DirectXTK Effects system
@@ -83,10 +82,8 @@ Game::Game(ID3D11Device* _pd3dDevice, HWND _hWnd, HINSTANCE _hInstance)
 	UINT height = rc.bottom - rc.top;
 	float AR = (float)width / (float)height;
 
-	//create a base camera
-	m_cam = new Camera(0.25f * XM_PI, AR, 1.0f, 10000.0f, Vector3::UnitY, Vector3::Zero);
-	m_cam->SetPos(Vector3(0.0f, 0.0f, 150.0f));
-	m_GameObjects.push_back(m_cam);
+	screenWidth = width;
+	screenHeight = height;
 
 	//create a base light
 	m_light = new Light(Vector3(0.0f, 100.0f, 160.0f), Color(1.0f, 1.0f, 1.0f, 1.0f), Color(0.4f, 0.1f, 0.1f, 1.0f));
@@ -96,23 +93,30 @@ Game::Game(ID3D11Device* _pd3dDevice, HWND _hWnd, HINSTANCE _hInstance)
 	Player* pPlayer = new Player("BirdModelV1.cmo", _pd3dDevice, m_fxFactory);
 	m_GameObjects.push_back(pPlayer);
 
+	//create a base camera
+	m_freeCam = new FreeCamera(0.25f * XM_PI, AR, 1.0f, 10000.0f, Vector3::UnitY, Vector3(0.0f, 10.0f, 120.0f));
+	m_freeCam->SetPos(Vector3(0.0f, 0.0f, 150.0f));
+	m_GameObjects.push_back(m_freeCam);
+
 	//add a secondary camera
-	m_TPScam = new TPSCamera(0.25f * XM_PI, AR, 1.0f, 10000.0f, Vector3::UnitY, Vector3(0.0f, 10.0f, 120.0f));
+	m_TPScam = new TPSCamera(0.25f * XM_PI, AR, 1.0f, 10000.0f, pPlayer, Vector3::UnitY, Vector3(0.0f, 5.0f, 60.0f));
 	m_GameObjects.push_back(m_TPScam);
 
 	//create DrawData struct and populate its pointers
 	m_DD = new DrawData;
 	m_DD->m_pd3dImmediateContext = nullptr;
 	m_DD->m_states = m_states;
-	m_DD->m_cam = m_cam;
+	m_DD->m_cam = m_freeCam;
 	m_DD->m_light = m_light;
 
-	/*FileVBGO* terrainBox = new FileVBGO("../Assets/terrainTex.txt", _pd3dDevice);
-	m_GameObjects.push_back(terrainBox);*/
 	m_GameObjects.push_back(new Tree(4, 4, .6f, 10.0f *Vector3::Up, XM_PI / 6.0f, "JEMINA vase -up.cmo", _pd3dDevice, m_fxFactory));
 
 	maxBoids = 100;
-	m_boidManager = std::make_unique<BoidManager>(_pd3dDevice, maxBoids/*, "BirdModelV1.cmo", m_fxFactory*/);
+	m_boidManager = std::make_unique<BoidManager>(_pd3dDevice, maxBoids);
+	
+	game_state = GameState::GS_MAIN_MENU;
+	camera_state = CameraState::FREE_CAMERA;
+	current_cam = m_freeCam;
 };
 
 
@@ -183,10 +187,72 @@ bool Game::Tick()
 		}
 	}
 
-	//Upon pressing escape QUIT
-	if (m_keyboardState[DIK_ESCAPE] & 0x80)
+	// GAME STATE CHECKS
+	// If the player is on the main menu
+	if (game_state == GameState::GS_MAIN_MENU)
 	{
-		return false;
+		// On pressing escape send signal back to application class to shutdown
+		if ((m_keyboardState[DIK_ESCAPE] & 0x80) &&
+			!(m_prevKeyboardState[DIK_ESCAPE] & 0x80))
+		{
+			return false;
+		}
+
+		// On pressing escape send signal back to application class to shutdown
+		if (m_keyboardState[DIK_RETURN] & 0x80)
+		{
+			game_state = GameState::GS_PLAY_GAME;
+			return true;
+		}
+	}
+
+	// If the player is 'In Game'
+	if (game_state == GameState::GS_PLAY_GAME)
+	{
+		if ((m_keyboardState[DIK_P] & 0x80) &&
+			!(m_prevKeyboardState[DIK_P] & 0x80))
+		{
+			game_state = GameState::GS_PAUSE;
+			return true;
+		}
+
+		// Camera Switch
+		if ((m_keyboardState[DIK_SPACE] & 0x80) &&
+			!(m_prevKeyboardState[DIK_SPACE] & 0x80))
+		{
+			if (camera_state == CameraState::FREE_CAMERA)
+			{
+				camera_state = TPS_CAMERA;
+				current_cam = m_TPScam;
+				return true;
+			}
+
+			if (camera_state == CameraState::TPS_CAMERA)
+			{
+				camera_state = FREE_CAMERA;
+				current_cam = m_freeCam;
+				return true;
+			}
+		}
+
+		PlayTick();
+	}
+
+	if (game_state == GameState::GS_PAUSE)
+	{
+		if ((m_keyboardState[DIK_P] & 0x80) &&
+			!(m_prevKeyboardState[DIK_P] & 0x80))
+		{
+			game_state = GameState::GS_PLAY_GAME;
+			return true;
+		}
+		if ((m_keyboardState[DIK_ESCAPE] & 0x80) &&
+			!(m_prevKeyboardState[DIK_ESCAPE] & 0x80))
+		{
+			game_state = GameState::GS_MAIN_MENU;
+			//resetGame(); // reset simulation
+			return true;
+		}
 	}
 
 	//lock the cursor to the centre of the window
@@ -198,50 +264,27 @@ bool Game::Tick()
 	DWORD currentTime = GetTickCount();
 	m_GD->m_dt = min((float)(currentTime - m_playTime) / 1000.0f, 0.1f);
 	m_playTime = currentTime;
-
-	//start to a VERY simple FSM
-	switch (m_GD->m_GS)
-	{
-	case GS_ATTRACT:
-		break;
-	case GS_PAUSE:
-		break;
-	case GS_GAME_OVER:
-		break;
-	case GS_PLAY_MAIN_CAM:
-	case GS_PLAY_TPS_CAM:
-		PlayTick();
-		break;
-	}
 	
 	return true;
 };
 
 void Game::PlayTick()
 {
-	//upon space bar switch camera state
-	if ((m_keyboardState[DIK_SPACE] & 0x80) && !(m_prevKeyboardState[DIK_SPACE] & 0x80))
-	{
-		if (m_GD->m_GS == GS_PLAY_MAIN_CAM)
-		{
-			m_GD->m_GS = GS_PLAY_TPS_CAM;
-		}
-		else
-		{
-			m_GD->m_GS = GS_PLAY_MAIN_CAM;
-		}
-	}
-
-	if ((m_keyboardState[DIK_Z] & 0x80) &&
-		!(m_prevKeyboardState[DIK_Z] & 0x80))
-	{
-		//m_boidManager->spawnBoid();
-	}
-
 	if ((m_mouseState.rgbButtons[0] & 0x80)/* &&
 		!(m_prevMouseState.rgbButtons[0] & 0x80)*/)
 	{
 		m_boidManager->spawnBoid();
+	}
+
+	if ((-m_mouseState.lZ & 0X80))
+	{
+
+		m_freeCam->increaseZoom();
+	}
+
+	if ((m_mouseState.lZ & 0X80))
+	{
+		m_freeCam->decreaseZoom();
 	}
 
 	//update all objects
@@ -262,9 +305,8 @@ void Game::Draw(ID3D11DeviceContext* _pd3dImmediateContext)
 	//set immediate context of the graphics device
 	m_DD->m_pd3dImmediateContext = _pd3dImmediateContext;
 
-	//set which camera to be used
-	m_DD->m_cam = m_cam;
-	if (m_GD->m_GS == GS_PLAY_TPS_CAM)
+	m_DD->m_cam = current_cam;
+	if (camera_state == CameraState::TPS_CAMERA)
 	{
 		m_DD->m_cam = m_TPScam;
 	}
@@ -272,21 +314,35 @@ void Game::Draw(ID3D11DeviceContext* _pd3dImmediateContext)
 	//update the constant buffer for the rendering of VBGOs
 	VBGO::UpdateConstantBuffer(m_DD);
 
-	//draw all objects
-	for (list<GameObject *>::iterator it = m_GameObjects.begin(); it != m_GameObjects.end(); it++)
+	if (game_state == GameState::GS_MAIN_MENU)
 	{
-		(*it)->Draw(m_DD);
+		displayMainMenu();
 	}
 
-	m_boidManager->Draw(m_DD);
-
-	// Draw sprite batch stuff 
-	m_DD2D->m_Sprites->Begin();
-	for (list<GameObject2D *>::iterator it = m_GameObject2Ds.begin(); it != m_GameObject2Ds.end(); it++)
+	if (game_state == GameState::GS_PLAY_GAME)
 	{
-		(*it)->Draw(m_DD2D);
+		// Draw the game objects first, then add HUD over the top
+
+		//draw all objects
+		for (list<GameObject *>::iterator it = m_GameObjects.begin(); it != m_GameObjects.end(); it++)
+		{
+			(*it)->Draw(m_DD);
+		}
+		// Draw sprite batch stuff 
+		m_DD2D->m_Sprites->Begin();
+		for (list<GameObject2D *>::iterator it = m_GameObject2Ds.begin(); it != m_GameObject2Ds.end(); it++)
+		{
+			(*it)->Draw(m_DD2D);
+		}
+		m_DD2D->m_Sprites->End();
+
+		m_boidManager->Draw(m_DD);
 	}
-	m_DD2D->m_Sprites->End();
+
+	if (game_state == GameState::GS_PAUSE)
+	{
+		displayPauseMenu();
+	}
 
 	//drawing text screws up the Depth Stencil State, this puts it back again!
 	_pd3dImmediateContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
@@ -350,4 +406,44 @@ bool Game::readMouse()
 		}
 	}
 	return true;
+}
+
+
+
+void Game::displayMainMenu()
+{
+	// Draw sprite Batch stuff
+	m_DD2D->m_Sprites->Begin();
+
+	int posx = screenWidth / 10 * 1;
+	int posy = screenHeight / 10 * 1;
+
+	displayText("Boids Simulation\n 'By Samuel Harden'", posx, posy);
+
+	m_DD2D->m_Sprites->End();
+}
+
+
+
+void Game::displayPauseMenu()
+{
+	m_DD2D->m_Sprites->Begin();
+
+	int posx = screenWidth / 10 * 1;
+	int posy = screenHeight / 10 * 1;
+
+	displayText("Simulation Paused", posx, posy);
+
+	m_DD2D->m_Sprites->End();
+}
+
+
+
+// Simple function that displays text, just pass a string and x and y coords
+void Game::displayText(const char* input, int& posX, int& posY)
+{
+	m_DD2D->m_Font->DrawString(m_DD2D->m_Sprites.get(), Helper::charToWChar
+		(input),
+		XMFLOAT2((posY), (posY)),
+		Colors::White);
 }

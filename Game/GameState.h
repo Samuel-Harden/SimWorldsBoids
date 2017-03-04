@@ -1,18 +1,30 @@
-#ifndef _GAME_STATE_H_
-#define _GAME_STATE_H_
+#pragma once
+
+
 
 //=================================================================
 //Possible GameStates
 //=================================================================
 
-enum GameState {
+
+
+enum GameState 
+{
 	GS_NULL = 0,
-	GS_ATTRACT,
-	GS_PLAY_MAIN_CAM,
-	GS_PLAY_TPS_CAM,
+	GS_MAIN_MENU,
+	GS_PLAY_GAME,
 	GS_PAUSE,
-	GS_GAME_OVER,
-	GS_COUNT
 };
 
-#endif
+
+
+enum CameraState
+{
+	FREE_CAMERA, // MAIN FREE CAMERA
+	TPS_CAMERA,  // CAMERA FOLLOWS PLAYER
+};
+
+
+
+extern GameState game_state;
+extern CameraState camera_state;

@@ -9,17 +9,17 @@
 //each side be divided in to _size * _size squares (2 triangles per square)
 //=================================================================
 
-class VBBoidPrey : public VBGO
+class BoidPrey : public VBGO
 {
 public:
-	VBBoidPrey();
-	virtual ~VBBoidPrey();
+	BoidPrey();
+	virtual ~BoidPrey();
 
 	//initialise the Veretx and Index buffers for the cube
 	void init(ID3D11Device* _GD);
 
 	void Tick(GameData* _GD);
-	void run(std::vector<VBBoidPrey*>& boids, GameData* _GD);
+	void run(std::vector<BoidPrey*>& boids, GameData* _GD);
 
 	Vector3 getVelocity();
 
@@ -40,10 +40,10 @@ protected:
 
 private:
 
-	void flock(std::vector<VBBoidPrey*>& _boids);
+	void flock(std::vector<BoidPrey*>& _boids, GameData* _GD);
 	void applyForce(Vector3& force);
 
-	void groupColor(std::vector<VBBoidPrey*>& _boids);
+	void groupColor(std::vector<BoidPrey*>& _boids);
 
 	void checkPosition();
 
@@ -52,6 +52,7 @@ private:
 	Vector3 position;
 	Vector3 velocity;
 	Vector3 acceleration;
+	Vector3 m_up;
 
 	float maxForce;
 	float maxSpeed;
@@ -68,16 +69,8 @@ private:
 
 	// Behaviours
 	Vector3 seek(Vector3& target);
-	Vector3 seperate(std::vector<VBBoidPrey*>& _boids);
-	Vector3 align(std::vector<VBBoidPrey*>& _boids);
-	Vector3 cohesion(std::vector<VBBoidPrey*>& _boids);
-
-	Vector3 m_dir;
-	Vector3 m_up;
-	Vector3 direction;
-	Vector3 desired;
-
-	Vector3 m_target;
-
-	Matrix m_viewMat;
+	Vector3 seperate(std::vector<BoidPrey*>& _boids);
+	Vector3 avoidPredator(GameData* _GD);
+	Vector3 align(std::vector<BoidPrey*>& _boids);
+	Vector3 cohesion(std::vector<BoidPrey*>& _boids);
 };

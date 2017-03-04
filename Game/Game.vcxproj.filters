@@ -43,6 +43,12 @@
     <Filter Include="Objects\2D\Source">
       <UniqueIdentifier>{01e73c6e-7bcd-454a-8185-915670785862}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Objects\Source\Boids">
+      <UniqueIdentifier>{9f0b781b-0246-47e6-8542-b89354707094}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Headers\Boids">
+      <UniqueIdentifier>{0e4be18f-c099-478e-957f-bde1983b0d5e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -135,11 +141,17 @@
     <ClInclude Include="BoidManager.h">
       <Filter>Base\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Boid.h">
+    <ClInclude Include="FreeCamera.h">
       <Filter>Objects\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="VBBoidPrey.h">
-      <Filter>Objects\Headers</Filter>
+    <ClInclude Include="Boid.h">
+      <Filter>Objects\Headers\Boids</Filter>
+    </ClInclude>
+    <ClInclude Include="PredatorBoid.h">
+      <Filter>Objects\Headers\Boids</Filter>
+    </ClInclude>
+    <ClInclude Include="BoidPrey.h">
+      <Filter>Objects\Headers\Boids</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -200,11 +212,20 @@
     <ClCompile Include="BoidManager.cpp">
       <Filter>Base\Source</Filter>
     </ClCompile>
-    <ClCompile Include="Boid.cpp">
+    <ClCompile Include="FreeCamera.cpp">
       <Filter>Objects\Source</Filter>
     </ClCompile>
-    <ClCompile Include="VBBoidPrey.cpp">
-      <Filter>Objects\Source</Filter>
+    <ClCompile Include="GameState.cpp">
+      <Filter>Base\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Boid.cpp">
+      <Filter>Objects\Source\Boids</Filter>
+    </ClCompile>
+    <ClCompile Include="BoidPrey.cpp">
+      <Filter>Objects\Source\Boids</Filter>
+    </ClCompile>
+    <ClCompile Include="PredatorBoid.cpp">
+      <Filter>Objects\Source\Boids</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

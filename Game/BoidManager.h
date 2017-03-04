@@ -19,8 +19,8 @@
 #include <string>
 #include "Model.h"
 
-class VBBoidPrey;
-class Boid;
+class BoidPrey;
+class Player;
 struct GameData;
 struct DrawData;
 
@@ -28,7 +28,7 @@ class BoidManager
 {
 public:
 
-	BoidManager(ID3D11Device* _pd3dDevice, int& _maxBoids/*, std::string _fileName, DirectX::IEffectFactory* _EF*/);
+	BoidManager(ID3D11Device* _pd3dDevice, int& _maxBoids);
 	~BoidManager();
 
 	void Tick(GameData* _GD);
@@ -40,11 +40,11 @@ protected:
 
 private:
 
-	void setBoids(GameData* _GD);
+	void setPreyBoids(GameData* _GD);
 
-	std::vector<VBBoidPrey*> boids;
+	std::vector<BoidPrey*> preyboids;
 
-	VBBoidPrey* boid;
+	BoidPrey* boid;
 
 	int currentNoBoids;
 };

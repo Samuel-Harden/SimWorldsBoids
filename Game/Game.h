@@ -22,6 +22,7 @@ using namespace DirectX;
 class GameObject;
 class GameObject2D;
 class Camera;
+class FreeCamera;
 class TPSCamera;
 struct GameData;
 struct DrawData;
@@ -43,8 +44,9 @@ public:
 protected:
 	DWORD m_playTime; //amount of time since the game started
 
-	Camera* m_cam; //principle camera
+	FreeCamera* m_freeCam; //principle camera
 	TPSCamera* m_TPScam;//TPS cam
+	Camera* current_cam;
 	Light* m_light; //base light
 
 	list<GameObject *> m_GameObjects; //data structure storing all GameObjects of this Game
@@ -81,6 +83,14 @@ protected:
 
 private:
 	int maxBoids;
+
+	float screenWidth;
+	float screenHeight;
+
+	void displayMainMenu();
+	void displayPauseMenu();
+
+	void displayText(const char* input, int& posX, int& posY);
 };
 
 
