@@ -5,6 +5,7 @@
 //system headers
 #include <windows.h>
 #include <time.h>
+#include <iostream>
 
 //our headers
 #include "ObjectList.h"
@@ -17,10 +18,10 @@
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
+
+
 Game::Game(ID3D11Device* _pd3dDevice, HWND _hWnd, HINSTANCE _hInstance) 
 {
-	//srand(time(NULL));
-	
 	//set up audio
 	CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 	AUDIO_ENGINE_FLAGS eflags = AudioEngine_Default;
@@ -86,7 +87,8 @@ Game::Game(ID3D11Device* _pd3dDevice, HWND _hWnd, HINSTANCE _hInstance)
 	screenHeight = height;
 
 	//create a base light
-	m_light = new Light(Vector3(0.0f, 100.0f, 160.0f), Color(1.0f, 1.0f, 1.0f, 1.0f), Color(0.4f, 0.1f, 0.1f, 1.0f));
+	m_light = new Light(Vector3(0.0f, 100.0f, 160.0f), 
+		Color(1.0f, 1.0f, 1.0f, 1.0f), Color(0.4f, 0.1f, 0.1f, 1.0f));
 	m_GameObjects.push_back(m_light);
 
 	//add Player
@@ -94,12 +96,14 @@ Game::Game(ID3D11Device* _pd3dDevice, HWND _hWnd, HINSTANCE _hInstance)
 	m_GameObjects.push_back(pPlayer);
 
 	//create a base camera
-	m_freeCam = new FreeCamera(0.25f * XM_PI, AR, 1.0f, 10000.0f, Vector3::UnitY, Vector3(0.0f, 10.0f, 120.0f));
+	m_freeCam = new FreeCamera(0.25f * XM_PI, AR, 1.0f, 10000.0f,
+		Vector3::UnitY, Vector3(0.0f, 10.0f, 120.0f));
 	m_freeCam->SetPos(Vector3(0.0f, 0.0f, 150.0f));
 	m_GameObjects.push_back(m_freeCam);
 
 	//add a secondary camera
-	m_TPScam = new TPSCamera(0.25f * XM_PI, AR, 1.0f, 10000.0f, pPlayer, Vector3::UnitY, Vector3(0.0f, 5.0f, 60.0f));
+	m_TPScam = new TPSCamera(0.25f * XM_PI, AR, 1.0f, 10000.0f, pPlayer,
+		Vector3::UnitY, Vector3(0.0f, 5.0f, 60.0f));
 	m_GameObjects.push_back(m_TPScam);
 
 	//create DrawData struct and populate its pointers
@@ -109,14 +113,61 @@ Game::Game(ID3D11Device* _pd3dDevice, HWND _hWnd, HINSTANCE _hInstance)
 	m_DD->m_cam = m_freeCam;
 	m_DD->m_light = m_light;
 
-	m_GameObjects.push_back(new Tree(4, 4, .6f, 10.0f *Vector3::Up, XM_PI / 6.0f, "JEMINA vase -up.cmo", _pd3dDevice, m_fxFactory));
-
-	maxBoids = 100;
+	maxBoids = 1000;
 	m_boidManager = std::make_unique<BoidManager>(_pd3dDevice, maxBoids);
 	
 	game_state = GameState::GS_MAIN_MENU;
 	camera_state = CameraState::FREE_CAMERA;
 	current_cam = m_freeCam;
+
+
+	// AntTweakBar Setup
+	TwInit(TW_DIRECT3D11, _pd3dDevice);
+	TwWindowSize(screenWidth, screenHeight);
+
+	myBar = TwNewBar("Boid Variables");
+	int myBarSize[2] = { 250, 180 };
+	TwSetParam(myBar, NULL, "size", TW_PARAM_INT32, 2, myBarSize);
+
+
+	// AntTweakBar Buttons /////////////////////////////////////////////////////
+
+	TwAddVarRO(myBar, "Number of Boids: ", TW_TYPE_INT32,
+		&m_boidManager->activeBoids, nullptr);
+
+	TwAddVarRW(myBar, "BoidSpeed: ", TW_TYPE_FLOAT,
+		&m_boidManager->getBoidSpeed(), nullptr);
+
+	TwAddVarRW(myBar, "View Distance: ", TW_TYPE_FLOAT,
+		&m_boidManager->getNeighbourDist(), nullptr);
+
+	TwAddVarRW(myBar, "Group Seperation: ", TW_TYPE_FLOAT,
+		&m_boidManager->getDesiredSeperation(), nullptr);
+
+	TwAddVarRW(myBar, "Separation: ", TW_TYPE_FLOAT,
+		&m_boidManager->getSepWeight(), nullptr);
+
+	TwAddVarRW(myBar, "Alignment: ", TW_TYPE_FLOAT,
+		&m_boidManager->getAliWeight(), nullptr);
+
+	TwAddVarRW(myBar, "Cohesion: ", TW_TYPE_FLOAT,
+		&m_boidManager->getCohWeight(), nullptr);
+
+	TwAddVarRW(myBar, "Run (Predators): ", TW_TYPE_FLOAT,
+		&m_boidManager->getRunWeight(), nullptr);
+
+	// End AntTweakBar Stuff ///////////////////////////////////////////////////
+
+
+	//lock the cursor to the centre of the window
+	RECT window;
+
+	GetWindowRect(m_hWnd, &window);
+
+	SetCursorPos((window.left + window.right) >> 1,
+		(window.bottom + window.top) >> 1);
+
+	ShowCursor(true);
 };
 
 
@@ -165,6 +216,9 @@ Game::~Game()
 	delete m_fxFactory;
 
 	delete m_DD2D;
+
+	//delete myBar;
+	TwTerminate();
 
 };
 
@@ -224,6 +278,8 @@ bool Game::Tick()
 			{
 				camera_state = TPS_CAMERA;
 				current_cam = m_TPScam;
+				ShowCursor(false);
+
 				return true;
 			}
 
@@ -231,6 +287,7 @@ bool Game::Tick()
 			{
 				camera_state = FREE_CAMERA;
 				current_cam = m_freeCam;
+				ShowCursor(true);
 				return true;
 			}
 		}
@@ -250,15 +307,10 @@ bool Game::Tick()
 			!(m_prevKeyboardState[DIK_ESCAPE] & 0x80))
 		{
 			game_state = GameState::GS_MAIN_MENU;
-			//resetGame(); // reset simulation
+			m_boidManager->resetPreyBoids();
 			return true;
 		}
 	}
-
-	//lock the cursor to the centre of the window
-	RECT window;
-	GetWindowRect(m_hWnd, &window);
-	SetCursorPos((window.left + window.right) >> 1, (window.bottom + window.top) >> 1);
 
 	//calculate frame time-step dt for passing down to game objects
 	DWORD currentTime = GetTickCount();
@@ -276,15 +328,27 @@ void Game::PlayTick()
 		m_boidManager->spawnBoid();
 	}
 
+	if ((m_mouseState.rgbButtons[1] & 0x80))
+	{
+		m_freeCam->allowRotation(m_GD);
+	}
+
 	if ((-m_mouseState.lZ & 0X80))
 	{
-
 		m_freeCam->increaseZoom();
 	}
 
 	if ((m_mouseState.lZ & 0X80))
 	{
 		m_freeCam->decreaseZoom();
+	}
+
+	if (camera_state == CameraState::TPS_CAMERA)
+	{
+		//lock the cursor to the centre of the window
+		RECT window;
+		GetWindowRect(m_hWnd, &window);
+		SetCursorPos((window.left + window.right) >> 1, (window.bottom + window.top) >> 1);
 	}
 
 	//update all objects
@@ -319,7 +383,7 @@ void Game::Draw(ID3D11DeviceContext* _pd3dImmediateContext)
 		displayMainMenu();
 	}
 
-	if (game_state == GameState::GS_PLAY_GAME)
+	if (game_state == GameState::GS_PLAY_GAME || game_state == GameState::GS_PAUSE)
 	{
 		// Draw the game objects first, then add HUD over the top
 
@@ -337,11 +401,13 @@ void Game::Draw(ID3D11DeviceContext* _pd3dImmediateContext)
 		m_DD2D->m_Sprites->End();
 
 		m_boidManager->Draw(m_DD);
+
+		TwDraw();
 	}
 
 	if (game_state == GameState::GS_PAUSE)
 	{
-		displayPauseMenu();
+		//displayPauseMenu();
 	}
 
 	//drawing text screws up the Depth Stencil State, this puts it back again!

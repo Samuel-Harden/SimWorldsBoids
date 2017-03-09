@@ -72,10 +72,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>..\Bin\Desktop_2015\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>..\Bin\Desktop_2015\$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>D:\Documents\GitHub\SimWorldsBoids\AntTweakBar\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Documents\GitHub\SimWorldsBoids\AntTweakBar\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>..\Bin\Desktop_2015\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>..\Bin\Desktop_2015\$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>D:\Documents\GitHub\SimWorldsBoids\AntTweakBar\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Documents\GitHub\SimWorldsBoids\AntTweakBar\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -122,6 +126,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Boid.h" />
+    <ClInclude Include="BoidData.h" />
     <ClInclude Include="BoidManager.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="CMOGO.h" />
@@ -158,6 +163,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Boid.cpp" />
+    <ClCompile Include="BoidData.cpp" />
     <ClCompile Include="BoidManager.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="CMOGO.cpp" />

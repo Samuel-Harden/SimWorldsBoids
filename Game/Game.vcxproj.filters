@@ -153,6 +153,9 @@
     <ClInclude Include="BoidPrey.h">
       <Filter>Objects\Headers\Boids</Filter>
     </ClInclude>
+    <ClInclude Include="BoidData.h">
+      <Filter>Base\Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -226,6 +229,9 @@
     </ClCompile>
     <ClCompile Include="PredatorBoid.cpp">
       <Filter>Objects\Source\Boids</Filter>
+    </ClCompile>
+    <ClCompile Include="BoidData.cpp">
+      <Filter>Base\Source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

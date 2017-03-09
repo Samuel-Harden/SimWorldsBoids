@@ -14,6 +14,9 @@
 #include "SpriteFont.h"
 #include "Audio.h"
 
+
+#include <AntTweakBar.h>
+
 using std::list;
 using std::unique_ptr;
 using namespace DirectX;
@@ -91,6 +94,8 @@ private:
 	void displayPauseMenu();
 
 	void displayText(const char* input, int& posX, int& posY);
+
+	TwBar* myBar;
 };
 
 

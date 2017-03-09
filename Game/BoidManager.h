@@ -6,21 +6,14 @@
 
 #include <d3d11_1.h>
 
-#include <windows.h>
-#include <list>
-#include <dinput.h>
-#include "Effects.h"
-#include "CommonStates.h"
-#include "SpriteBatch.h"
-#include "SpriteFont.h"
-#include "Audio.h"
+//#include <windows.h>
 
 #include <vector>
-#include <string>
-#include "Model.h"
+#include <memory>
+//#include "Model.h"
 
+class BoidData;
 class BoidPrey;
-class Player;
 struct GameData;
 struct DrawData;
 
@@ -35,16 +28,33 @@ public:
 	void Draw(DrawData* _DD);
 
 	void spawnBoid();
+	void resetPreyBoids();
+
+	int activeBoids;
+
+	BoidData* getBoidData();
+
+	float& getBoidSpeed();
+	float& getNeighbourDist();
+	float& getDesiredSeperation();
+	float& getSepWeight();
+	float& getAliWeight();
+	float& getCohWeight();
+	float& getRunWeight();
+
 
 protected:
 
 private:
 
-	void setPreyBoids(GameData* _GD);
+	void updatePreyBoids(GameData* _GD);
 
 	std::vector<BoidPrey*> preyboids;
 
+	BoidData* m_boidData;
+
 	BoidPrey* boid;
 
-	int currentNoBoids;
+	int updateGroup;
+	int maxBoids;
 };

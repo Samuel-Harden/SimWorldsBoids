@@ -14,6 +14,8 @@ public:
 
 	virtual void Tick(GameData* _GD) override;
 
+	void allowRotation(GameData* _GD);
+
 	void increaseZoom();
 	void decreaseZoom();
 

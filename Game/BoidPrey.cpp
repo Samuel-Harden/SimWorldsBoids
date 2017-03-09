@@ -1,44 +1,36 @@
 #include "BoidPrey.h"
 
-#include "GameData.h";
+#include "GameData.h"
+#include "BoidData.h"
 
-#include <iostream>
 
 
-BoidPrey::BoidPrey()
+BoidPrey::BoidPrey(int& _ID)
+	: boidID (_ID)
 {
-	desiredSeperation = 4.0f;
-
 	acceleration = Vector3::Zero;
-
-	velocity.x = randomFloat(0.5f, 2.0f);
-	velocity.y = randomFloat(0.5f, 2.0f);
-	velocity.z = randomFloat(0.5f, 2.0f);
 
 	float angle = randomFloat(0.5f, 6.2f);
 	float angle1 = cos(angle);
 	float angle2 = sin(angle);
 	float angle3 = tan(angle);
 
-	velocity = Vector3(angle1, angle2, 0.0f);
+	velocity = Vector3(angle1, angle2, angle2);
 
+	// Set starting paramaters
 	maxSpeed = 0.5f;
 	maxForce = 0.03f;
-
-	neighbourDistance = 15.0f;
-
-	zoneSize = 50;
+	neighbourDistance = 30.0f;
+	desiredSeperation = 2.5f;
 
 	// Set random starting positon, inside the Designated zone
-	float posX = randomFloat(-zoneSize, zoneSize);
-	float posY = randomFloat(-zoneSize, zoneSize);
-	float posZ = randomFloat(-zoneSize, zoneSize);
+	setRandPos();
 
-	m_pos = Vector3(posX, posY, 0.0f);
+	// Spawn boid at center
+	//m_pos = Vector3::Zero;
 
 	isActive = false;
-
-	m_up = Vector3::Up;
+	newPos = false;
 }
 
 
@@ -57,9 +49,6 @@ void BoidPrey::init(ID3D11Device* GD)
 	boidBlue = randomFloat(0.0f, 1.0f);
 	boidGreen = randomFloat(0.0f, 1.0f);
 
-	// For testing - print colours to debug...
-	//std::cout << boidRed << "  " << boidBlue << "  " << boidGreen << std::endl;
-
 	//calculate number of vertices and primatives
 	int numVerts = 12;
 	m_numPrims = numVerts / 3;
@@ -74,7 +63,7 @@ void BoidPrey::init(ID3D11Device* GD)
 	}
 
 	//in each loop create the two traingles for the matching sub-square on each of the six faces
-	vert = 0;
+	 int vert = 0;
 
 	m_vertices[vert].Color = Color(boidRed, boidBlue, boidGreen, 1.0f);
 	m_vertices[vert++].Pos = Vector3(0.0f, 0.0f, 0.0f);
@@ -143,29 +132,68 @@ void BoidPrey::activateBoid()
 }
 
 
-
-void BoidPrey::run(std::vector<BoidPrey*>& _boids, GameData* _GD)
+void BoidPrey::deactivateBoid()
 {
-	flock(_boids, _GD);
-	Tick(_GD);
+	// Deactivate Boid
+	isActive = false;
+
+	// Set new Random Pos
+	setRandPos();
 }
 
 
 
-void BoidPrey::flock(std::vector<BoidPrey*>& _boids, GameData* _GD)
+void BoidPrey::setRandPos()
+{
+	// Set random starting positon, inside the Designated zone
+	float posX = randomFloat(-zoneSize, zoneSize);
+	float posY = randomFloat(-zoneSize, zoneSize);
+	float posZ = randomFloat(-zoneSize, zoneSize);
+
+	m_pos = Vector3(posX, posY, posZ);
+}
+
+
+
+void BoidPrey::run(std::vector<BoidPrey*>& _boids, GameData* _GD,
+	int _boidGroup, BoidData* _boidData)
+{
+	maxSpeed = _boidData->boidSpeed;
+	if (maxSpeed < 0.1f)
+	{
+		maxSpeed = 0.1f;
+	}
+
+	neighbourDistance = _boidData->neighbourDist;
+	desiredSeperation = _boidData->desiredSep;
+
+	// If this boid, is in the current group to be updated, update behaviours...
+	if (boidID >= _boidGroup && boidID <= (_boidGroup + 100))
+	{
+		flock(_boids, _GD, _boidData);
+	}
+
+	Tick(_GD);
+
+	checkPosition();
+}
+
+
+
+void BoidPrey::flock(std::vector<BoidPrey*>& _boids, GameData* _GD, BoidData*& _boidData)
 {
 	Vector3 sep = seperate(_boids);    // Seperation
-	Vector3 run = avoidPredator(_GD);  // Avoid Predator
+	Vector3 run = avoidPredator(_GD);  // Avoid Predator (Player)
 	Vector3 ali = align(_boids);       // Alignment
 	Vector3 coh = cohesion(_boids);    // Cohesion
 
 	//groupColor(_boids);              // Function not currently working...
 
-									   // Arbitrarily weight these force
-	sep *= 1.25f;
-	run *= 2.0f;
-	ali *= 1.0;
-	coh *= 1.0f;
+	// Arbitrarily weight these force
+	sep *= _boidData->sepWeight;
+	run *= _boidData->runWeight;
+	ali *= _boidData->aliWeight;
+	coh *= _boidData->cohWeight;
 
 	applyForce(sep);
 	applyForce(run);
@@ -194,16 +222,12 @@ void BoidPrey::Tick(GameData* _GD)
 	m_pos = (m_pos + velocity);
 
 	Matrix scaleMat = Matrix::CreateScale(m_scale);
-	Matrix rotTransMat = Matrix::CreateWorld(m_pos, -velocity, m_up);
+	Matrix rotTransMat = Matrix::CreateWorld(m_pos, -velocity, Vector3::Up);
 
 	m_worldMat = m_fudge * scaleMat * rotTransMat;
 
-	checkPosition();
-
 	// reset acceleration to 0 each cycle
 	acceleration = Vector3::Zero;
-
-	//VBGO::Tick(_GD);
 }
 
 
@@ -363,16 +387,16 @@ Vector3 BoidPrey::avoidPredator(GameData* _GD)
 	Vector3 steer = Vector3::Zero;
 	int count = 0;
 
-		float d = Vector3::Distance(m_pos, _GD->predatorPos);
+	float d = Vector3::Distance(m_pos, _GD->predatorPos);
 
-		// if Boid is a neighbour
-		if (d > 0 && d < (desiredSeperation * 5))
-		{
-				// Calculate vector pointing away from neighbour
-			Vector3 diff = (m_pos - (_GD->predatorPos));
-			diff = XMVector3Normalize(diff);
-			diff = (diff / d); // Weight by distance
-			steer = (steer + diff);
+	// if Boid is a neighbour
+	if (d > 0 && d < (desiredSeperation * 5))
+	{
+		// Calculate vector pointing away from neighbour
+		Vector3 diff = (m_pos - (_GD->predatorPos));
+		diff = XMVector3Normalize(diff);
+		diff = (diff / d); // Weight by distance
+		steer = (steer + diff);
 	}
 
 	// As long as the vector is greater than 0
@@ -388,6 +412,22 @@ Vector3 BoidPrey::avoidPredator(GameData* _GD)
 		steer = XMVector3ClampLength(steer, 0.0f, (maxSpeed * 2));
 	}
 	return steer;
+}
+
+
+// only working for 2 dimentions
+bool BoidPrey::limitPosition()
+{
+	// If boid it too close to the edge, turn the around
+	//float d = Vector3::Distance(m_pos, Vector3::Zero);
+
+	if (Vector3::Distance(m_pos, Vector3::Zero) > zoneSize)
+	{
+		velocity = -velocity;
+		return false;
+	}
+
+	return true;
 }
 
 
@@ -422,11 +462,7 @@ void BoidPrey::groupColor(std::vector<BoidPrey*>& _boids)
 		blueSum = (blueSum / count);
 		greenSum = (greenSum / count);
 
-		for (int i = 0; i < vert; i++)
-		{
-			//m_vertices[i].Color = Color(redSum, blueSum, greenSum, 1.0f);
-			//m_VertexBuffer->GetDesc();// = Color(redSum, blueSum, greenSum, 1.0f);
-		}
+		// Set new Colour...
 	}
 }
 

@@ -75,6 +75,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	PAINTSTRUCT ps;
 	HDC hdc;
 
+	// In the Windows MessageProc callback
+	if (TwEventWin(hWnd, message, wParam, lParam)) // send event message to AntTweakBar
+		return 0; // event has been handled by AntTweakBar
+					  // else process the event message
+					  // ...
+
 	switch (message)
 	{
 	case WM_PAINT:
