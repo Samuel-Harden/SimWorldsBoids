@@ -14,6 +14,7 @@ enum GameState
 	GS_MAIN_MENU,
 	GS_PLAY_GAME,
 	GS_PAUSE,
+	GS_EXIT
 };
 
 

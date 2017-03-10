@@ -21,7 +21,7 @@ class BoidManager
 {
 public:
 
-	BoidManager(ID3D11Device* _pd3dDevice, int& _maxBoids);
+	BoidManager(ID3D11Device* _pd3dDevice, const int& _maxBoids);
 	~BoidManager();
 
 	void Tick(GameData* _GD);
@@ -56,5 +56,5 @@ private:
 	BoidPrey* boid;
 
 	int updateGroup;
-	int maxBoids;
+	int currentNoBoids;
 };

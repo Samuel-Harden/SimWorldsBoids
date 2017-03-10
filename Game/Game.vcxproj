@@ -125,11 +125,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Alignment.h" />
     <ClInclude Include="Boid.h" />
     <ClInclude Include="BoidData.h" />
     <ClInclude Include="BoidManager.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="CMOGO.h" />
+    <ClInclude Include="Cohesion.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="DrawData2D.h" />
     <ClInclude Include="DrawData.h" />
@@ -142,10 +144,12 @@
     <ClInclude Include="GameState.h" />
     <ClInclude Include="Helper.h" />
     <ClInclude Include="ImageGO2D.h" />
+    <ClInclude Include="InputHandler.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="MarchCubes.h" />
     <ClInclude Include="ObjectList.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Separation.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="TextGO2D.h" />
     <ClInclude Include="TPSCamera.h" />
@@ -162,11 +166,13 @@
     <ClInclude Include="vertex.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Alignment.cpp" />
     <ClCompile Include="Boid.cpp" />
     <ClCompile Include="BoidData.cpp" />
     <ClCompile Include="BoidManager.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="CMOGO.cpp" />
+    <ClCompile Include="Cohesion.cpp" />
     <ClCompile Include="fileVBGO.cpp" />
     <ClCompile Include="FreeCamera.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -174,9 +180,11 @@
     <ClCompile Include="GameObject2D.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="ImageGO2D.cpp" />
+    <ClCompile Include="InputHandler.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="MarchCubes.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Separation.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TextGO2D.cpp" />
     <ClCompile Include="TPSCamera.cpp" />

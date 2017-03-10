@@ -6,6 +6,11 @@
 
 class BoidData;
 
+// Behaviours
+class Separation;
+class Alignment;
+class Cohesion;
+
 //=================================================================
 //procedurally generate a VBGO BoidPrey
 //each side be divided in to _size * _size squares (2 triangles per square)
@@ -79,6 +84,10 @@ private:
 	Vector3 cohesion(std::vector<BoidPrey*>& _boids);
 
 	void groupColor(std::vector<BoidPrey*>& _boids);
+
+	std::unique_ptr<Separation> m_separation;
+	std::unique_ptr<Alignment> m_alignment;
+	std::unique_ptr<Cohesion> m_cohesion;
 
 	// Constants
 	const int zoneSize = 200;

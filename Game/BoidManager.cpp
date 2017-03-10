@@ -6,8 +6,8 @@
 #include "BoidData.h"
 
 
-BoidManager::BoidManager(ID3D11Device* _pd3dDevice, int& _maxBoids)
-	      : maxBoids (0),
+BoidManager::BoidManager(ID3D11Device* _pd3dDevice, const int& _maxBoids)
+	      : currentNoBoids (0),
 	      updateGroup(0)
 {
 	preyboids.reserve(_maxBoids);
@@ -20,7 +20,7 @@ BoidManager::BoidManager(ID3D11Device* _pd3dDevice, int& _maxBoids)
 		boid = new BoidPrey(j); // Pass in an int - Sets Boids ID
 		boid->init(_pd3dDevice);
 		preyboids.push_back(boid);
-		maxBoids++;
+		currentNoBoids++;
 		j++;
 	}
 
@@ -55,7 +55,7 @@ void BoidManager::Tick(GameData* _GD)
 
 void BoidManager::Draw(DrawData* _DD)
 {
-	for (int i = 0; i < maxBoids; i++)
+	for (int i = 0; i < currentNoBoids; i++)
 	{
 		if (preyboids[i]->isActive == true)
 		{
@@ -68,7 +68,7 @@ void BoidManager::Draw(DrawData* _DD)
 
 void BoidManager::updatePreyBoids(GameData* _GD)
 {
-	for (int i = 0; i < maxBoids; i++)
+	for (int i = 0; i < currentNoBoids; i++)
 	{
 		if (preyboids[i]->isActive == true)
 		{

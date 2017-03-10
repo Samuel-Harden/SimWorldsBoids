@@ -13,6 +13,7 @@
 #include "drawdata.h"
 #include "DrawData2D.h"
 
+#include "InputHandler.h"
 #include "BoidManager.h"
 
 using namespace DirectX;
@@ -22,7 +23,7 @@ using namespace DirectX::SimpleMath;
 
 Game::Game(ID3D11Device* _pd3dDevice, HWND _hWnd, HINSTANCE _hInstance) 
 {
-	//set up audio
+	// Set up audio
 	CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 	AUDIO_ENGINE_FLAGS eflags = AudioEngine_Default;
 #ifdef _DEBUG
@@ -30,40 +31,33 @@ Game::Game(ID3D11Device* _pd3dDevice, HWND _hWnd, HINSTANCE _hInstance)
 #endif
 	m_audioEngine.reset(new AudioEngine(eflags));
 
-	//Create DirectXTK spritebatch stuff
+	// Create DirectXTK spritebatch stuff
 	ID3D11DeviceContext* pd3dImmediateContext;
 	_pd3dDevice->GetImmediateContext(&pd3dImmediateContext);
 	m_DD2D = new DrawData2D();
 	m_DD2D->m_Sprites.reset(new SpriteBatch(pd3dImmediateContext));
 	m_DD2D->m_Font.reset(new SpriteFont(_pd3dDevice, L"..\\Assets\\italic.spritefont"));
 
-	//seed the random number generator
+	// Seed the random number generator
 	srand((UINT)time(NULL));
 
-	//Direct Input Stuff
+	// Direct Input Stuff
 	m_hWnd = _hWnd;
-	m_pKeyboard = nullptr;
-	m_pDirectInput = nullptr;
 
-	HRESULT hr = DirectInput8Create(_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_pDirectInput, NULL);
-	hr = m_pDirectInput->CreateDevice(GUID_SysKeyboard, &m_pKeyboard, NULL);
-	hr = m_pKeyboard->SetDataFormat(&c_dfDIKeyboard);
-	hr = m_pKeyboard->SetCooperativeLevel(m_hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
-
-	hr = m_pDirectInput->CreateDevice(GUID_SysMouse, &m_pMouse, NULL);
-	hr = m_pMouse->SetDataFormat(&c_dfDIMouse);
-	hr = m_pMouse->SetCooperativeLevel(m_hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
-
-	//create GameData struct and populate its pointers
 	m_GD = new GameData;
-	m_GD->m_keyboardState = m_keyboardState;
-	m_GD->m_prevKeyboardState = m_prevKeyboardState;
-	m_GD->m_mouseState = &m_mouseState;
 
-	//set up DirectXTK Effects system
+	// Input handler reacts to inputs
+	m_inputHandler = std::make_unique<InputHandler>(_hWnd, _hInstance);
+
+	// Set GameData struct and populate its pointers
+	m_GD->m_keyboardState = &m_inputHandler->getKeyboardState();
+	m_GD->m_prevKeyboardState = &m_inputHandler->getPreviousKeyboardState();
+	m_GD->m_mouseState = &m_inputHandler->getMouseState();
+
+	// Set up DirectXTK Effects system
 	m_fxFactory = new EffectFactory(_pd3dDevice);
 
-	//Tell the fxFactory to look to the correct build directory to pull stuff in from
+	// Tell the fxFactory to look to the correct build directory to pull stuff in from
 #ifdef DEBUG
 	((EffectFactory*)m_fxFactory)->SetDirectory(L"../Debug");
 #else
@@ -73,10 +67,10 @@ Game::Game(ID3D11Device* _pd3dDevice, HWND _hWnd, HINSTANCE _hInstance)
 	// Create other render resources here
 	m_states = new CommonStates(_pd3dDevice);
 
-	//init render system for VBGOs
+	// Init render system for VBGOs
 	VBGO::Init(_pd3dDevice);
 
-	//find how big my window is to correctly calculate my aspect ratio
+	// Find how big my window is to correctly calculate my aspect ratio
 	RECT rc;
 	GetClientRect(m_hWnd, &rc);
 	UINT width = rc.right - rc.left;
@@ -87,7 +81,7 @@ Game::Game(ID3D11Device* _pd3dDevice, HWND _hWnd, HINSTANCE _hInstance)
 	screenHeight = height;
 
 	//create a base light
-	m_light = new Light(Vector3(0.0f, 100.0f, 160.0f), 
+	m_light = new Light(Vector3(0.0f, 200.0f, 260.0f), 
 		Color(1.0f, 1.0f, 1.0f, 1.0f), Color(0.4f, 0.1f, 0.1f, 1.0f));
 	m_GameObjects.push_back(m_light);
 
@@ -95,7 +89,7 @@ Game::Game(ID3D11Device* _pd3dDevice, HWND _hWnd, HINSTANCE _hInstance)
 	Player* pPlayer = new Player("BirdModelV1.cmo", _pd3dDevice, m_fxFactory);
 	m_GameObjects.push_back(pPlayer);
 
-	//create a base camera
+	//create a primary camera
 	m_freeCam = new FreeCamera(0.25f * XM_PI, AR, 1.0f, 10000.0f,
 		Vector3::UnitY, Vector3(0.0f, 10.0f, 120.0f));
 	m_freeCam->SetPos(Vector3(0.0f, 0.0f, 150.0f));
@@ -113,13 +107,13 @@ Game::Game(ID3D11Device* _pd3dDevice, HWND _hWnd, HINSTANCE _hInstance)
 	m_DD->m_cam = m_freeCam;
 	m_DD->m_light = m_light;
 
-	maxBoids = 1000;
+	// Create our BoidManager
 	m_boidManager = std::make_unique<BoidManager>(_pd3dDevice, maxBoids);
 	
+	// Set States + camera
 	game_state = GameState::GS_MAIN_MENU;
 	camera_state = CameraState::FREE_CAMERA;
 	current_cam = m_freeCam;
-
 
 	// AntTweakBar Setup
 	TwInit(TW_DIRECT3D11, _pd3dDevice);
@@ -171,6 +165,7 @@ Game::Game(ID3D11Device* _pd3dDevice, HWND _hWnd, HINSTANCE _hInstance)
 };
 
 
+
 Game::~Game() 
 {
 	//delete Game Data & Draw Data
@@ -180,29 +175,12 @@ Game::~Game()
 	//tidy up VBGO render system
 	VBGO::CleanUp();
 
-	//tidy away Direct Input Stuff
-	if (m_pKeyboard)
-	{
-		m_pKeyboard->Unacquire();
-		m_pKeyboard->Release();
-	}
-	if (m_pMouse)
-	{
-		m_pMouse->Unacquire();
-		m_pMouse->Release();
-	}
-	if (m_pDirectInput)
-	{
-		m_pDirectInput->Release();
-	}
-
 	//get rid of the game objects here
 	for (list<GameObject *>::iterator it = m_GameObjects.begin(); it != m_GameObjects.end(); it++)
 	{
 		delete (*it);
 	}
 	m_GameObjects.clear();
-
 
 	//and the 2D ones
 	for (list<GameObject2D *>::iterator it = m_GameObject2Ds.begin(); it != m_GameObject2Ds.end(); it++)
@@ -219,16 +197,17 @@ Game::~Game()
 
 	//delete myBar;
 	TwTerminate();
-
 };
+
+
 
 bool Game::Tick() 
 {
 	//Poll Keyboard
-	readKeyboard();
+	m_inputHandler->readKeyboard();
 
 	// Poll Mouse
-	readMouse();
+	m_inputHandler->readMouse();
 
 	//tick audio engine
 	if (!m_audioEngine->Update())
@@ -241,75 +220,16 @@ bool Game::Tick()
 		}
 	}
 
-	// GAME STATE CHECKS
-	// If the player is on the main menu
-	if (game_state == GameState::GS_MAIN_MENU)
+	if (m_inputHandler->Tick(m_GD, m_boidManager.get(), m_freeCam, m_TPScam) == false)
 	{
-		// On pressing escape send signal back to application class to shutdown
-		if ((m_keyboardState[DIK_ESCAPE] & 0x80) &&
-			!(m_prevKeyboardState[DIK_ESCAPE] & 0x80))
-		{
-			return false;
-		}
-
-		// On pressing escape send signal back to application class to shutdown
-		if (m_keyboardState[DIK_RETURN] & 0x80)
-		{
-			game_state = GameState::GS_PLAY_GAME;
-			return true;
-		}
+		// If false exit the application
+		return false;
 	}
 
 	// If the player is 'In Game'
 	if (game_state == GameState::GS_PLAY_GAME)
 	{
-		if ((m_keyboardState[DIK_P] & 0x80) &&
-			!(m_prevKeyboardState[DIK_P] & 0x80))
-		{
-			game_state = GameState::GS_PAUSE;
-			return true;
-		}
-
-		// Camera Switch
-		if ((m_keyboardState[DIK_SPACE] & 0x80) &&
-			!(m_prevKeyboardState[DIK_SPACE] & 0x80))
-		{
-			if (camera_state == CameraState::FREE_CAMERA)
-			{
-				camera_state = TPS_CAMERA;
-				current_cam = m_TPScam;
-				ShowCursor(false);
-
-				return true;
-			}
-
-			if (camera_state == CameraState::TPS_CAMERA)
-			{
-				camera_state = FREE_CAMERA;
-				current_cam = m_freeCam;
-				ShowCursor(true);
-				return true;
-			}
-		}
-
 		PlayTick();
-	}
-
-	if (game_state == GameState::GS_PAUSE)
-	{
-		if ((m_keyboardState[DIK_P] & 0x80) &&
-			!(m_prevKeyboardState[DIK_P] & 0x80))
-		{
-			game_state = GameState::GS_PLAY_GAME;
-			return true;
-		}
-		if ((m_keyboardState[DIK_ESCAPE] & 0x80) &&
-			!(m_prevKeyboardState[DIK_ESCAPE] & 0x80))
-		{
-			game_state = GameState::GS_MAIN_MENU;
-			m_boidManager->resetPreyBoids();
-			return true;
-		}
 	}
 
 	//calculate frame time-step dt for passing down to game objects
@@ -318,30 +238,14 @@ bool Game::Tick()
 	m_playTime = currentTime;
 	
 	return true;
-};
+}
+
+
 
 void Game::PlayTick()
 {
-	if ((m_mouseState.rgbButtons[0] & 0x80)/* &&
-		!(m_prevMouseState.rgbButtons[0] & 0x80)*/)
-	{
-		m_boidManager->spawnBoid();
-	}
-
-	if ((m_mouseState.rgbButtons[1] & 0x80))
-	{
-		m_freeCam->allowRotation(m_GD);
-	}
-
-	if ((-m_mouseState.lZ & 0X80))
-	{
-		m_freeCam->increaseZoom();
-	}
-
-	if ((m_mouseState.lZ & 0X80))
-	{
-		m_freeCam->decreaseZoom();
-	}
+	// Ckeck inputs
+	m_inputHandler->playTick(m_GD, m_boidManager.get(), m_freeCam);
 
 	if (camera_state == CameraState::TPS_CAMERA)
 	{
@@ -364,6 +268,8 @@ void Game::PlayTick()
 	m_boidManager->Tick(m_GD);
 }
 
+
+
 void Game::Draw(ID3D11DeviceContext* _pd3dImmediateContext) 
 {
 	//set immediate context of the graphics device
@@ -385,8 +291,6 @@ void Game::Draw(ID3D11DeviceContext* _pd3dImmediateContext)
 
 	if (game_state == GameState::GS_PLAY_GAME || game_state == GameState::GS_PAUSE)
 	{
-		// Draw the game objects first, then add HUD over the top
-
 		//draw all objects
 		for (list<GameObject *>::iterator it = m_GameObjects.begin(); it != m_GameObjects.end(); it++)
 		{
@@ -413,66 +317,6 @@ void Game::Draw(ID3D11DeviceContext* _pd3dImmediateContext)
 	//drawing text screws up the Depth Stencil State, this puts it back again!
 	_pd3dImmediateContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
 };
-
-
-
-bool Game::readKeyboard()
-{
-	// Copy over old keyboard state
-	memcpy(m_prevKeyboardState, m_keyboardState, sizeof(unsigned char) * 256);
-
-	// clear out previous state
-	ZeroMemory(&m_keyboardState, sizeof(m_keyboardState));
-
-	// Read the keyboard device
-	HRESULT hr = m_pKeyboard->GetDeviceState(sizeof(m_keyboardState),
-		(LPVOID)&m_keyboardState);
-	if (FAILED(hr))
-	{
-		// If the keyboard lost focus or was not acquired
-		// then try to get control back
-		if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
-		{
-			m_pKeyboard->Acquire();
-		}
-
-		else
-		{
-			return false;
-		}
-	}
-	return true;
-}
-
-
-
-bool Game::readMouse()
-{
-	// Set previous mouse state
-	m_prevMouseState = m_mouseState;
-
-	// clear out previous state
-	ZeroMemory(&m_mouseState, sizeof(m_mouseState));
-
-	// Read the mouse device
-	HRESULT hr = m_pMouse->GetDeviceState(sizeof(m_mouseState),
-		(LPVOID)&m_mouseState);
-	if (FAILED(hr))
-	{
-		// If the mouse lost focus or was not acquired
-		// then try to get control back
-		if ((hr == DIERR_INPUTLOST) || (hr == DIERR_NOTACQUIRED))
-		{
-			m_pMouse->Acquire();
-		}
-
-		else
-		{
-			return false;
-		}
-	}
-	return true;
-}
 
 
 

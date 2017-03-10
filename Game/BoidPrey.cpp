@@ -3,12 +3,21 @@
 #include "GameData.h"
 #include "BoidData.h"
 
+#include "Alignment.h"
+#include "Separation.h"
+#include "Cohesion.h"
 
 
 BoidPrey::BoidPrey(int& _ID)
-	: boidID (_ID)
+	             : boidID (_ID),
+	             maxSpeed(0.5f),
+	            maxForce(0.03f),
+	   neighbourDistance(30.0f),
+	    desiredSeperation(2.5f),
+	            isActive(false),
+	              newPos(false),
+	acceleration(Vector3::Zero)
 {
-	acceleration = Vector3::Zero;
 
 	float angle = randomFloat(0.5f, 6.2f);
 	float angle1 = cos(angle);
@@ -17,20 +26,12 @@ BoidPrey::BoidPrey(int& _ID)
 
 	velocity = Vector3(angle1, angle2, angle2);
 
-	// Set starting paramaters
-	maxSpeed = 0.5f;
-	maxForce = 0.03f;
-	neighbourDistance = 30.0f;
-	desiredSeperation = 2.5f;
-
 	// Set random starting positon, inside the Designated zone
 	setRandPos();
 
-	// Spawn boid at center
-	//m_pos = Vector3::Zero;
-
-	isActive = false;
-	newPos = false;
+	m_alignment = std::make_unique<Alignment>();
+	m_separation = std::make_unique<Separation>();
+	m_cohesion = std::make_unique<Cohesion>();
 }
 
 
@@ -62,8 +63,7 @@ void BoidPrey::init(ID3D11Device* GD)
 		m_vertices[i].texCoord = Vector2::One;
 	}
 
-	//in each loop create the two traingles for the matching sub-square on each of the six faces
-	 int vert = 0;
+	int vert = 0;
 
 	m_vertices[vert].Color = Color(boidRed, boidBlue, boidGreen, 1.0f);
 	m_vertices[vert++].Pos = Vector3(0.0f, 0.0f, 0.0f);

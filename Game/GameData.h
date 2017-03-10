@@ -7,6 +7,7 @@
 
 #include <dinput.h>
 #include "GameState.h"
+#include "camera.h"
 
 using namespace DirectX;
 
@@ -20,5 +21,6 @@ struct GameData
 	unsigned char* m_prevKeyboardState; //previous frame's state of the keyboard
 	DIMOUSESTATE* m_mouseState; //current state of the mouse
 	Vector3 predatorPos;
+	Camera* m_currentCam;
 };
 #endif

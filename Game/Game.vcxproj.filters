@@ -49,6 +49,12 @@
     <Filter Include="Objects\Headers\Boids">
       <UniqueIdentifier>{0e4be18f-c099-478e-957f-bde1983b0d5e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Base\Headers\Behaviours">
+      <UniqueIdentifier>{bd4550ce-5819-41e1-9fc3-c8280a0c1324}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\Source\Behaviours">
+      <UniqueIdentifier>{79d86aaf-7938-4a1c-b750-19f9db90ebfe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -156,6 +162,18 @@
     <ClInclude Include="BoidData.h">
       <Filter>Base\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="InputHandler.h">
+      <Filter>Base\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Cohesion.h">
+      <Filter>Base\Headers\Behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="Alignment.h">
+      <Filter>Base\Headers\Behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="Separation.h">
+      <Filter>Base\Headers\Behaviours</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -232,6 +250,18 @@
     </ClCompile>
     <ClCompile Include="BoidData.cpp">
       <Filter>Base\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="InputHandler.cpp">
+      <Filter>Base\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Cohesion.cpp">
+      <Filter>Base\Source\Behaviours</Filter>
+    </ClCompile>
+    <ClCompile Include="Alignment.cpp">
+      <Filter>Base\Source\Behaviours</Filter>
+    </ClCompile>
+    <ClCompile Include="Separation.cpp">
+      <Filter>Base\Source\Behaviours</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

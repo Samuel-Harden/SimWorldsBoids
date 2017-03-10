@@ -3,6 +3,8 @@
 class BoidData
 {
 public:
+
+	// Friend classes have acess to protected data
 	friend class BoidPrey;
 	friend class BoidManager;
 
@@ -10,11 +12,14 @@ public:
 	~BoidData();
 
 protected:
-	int updateGroup;
+
+	// Behaviour Weights
 	float sepWeight;
 	float runWeight;
 	float aliWeight;
 	float cohWeight;
+
+	// Boid Variables
 	float boidSpeed;
 	float neighbourDist;
 	float desiredSep;
