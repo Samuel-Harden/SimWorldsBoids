@@ -72,9 +72,6 @@
     <ClInclude Include="ObjectList.h">
       <Filter>Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Terrain.h">
-      <Filter>Objects\Headers</Filter>
-    </ClInclude>
     <ClInclude Include="GameData.h">
       <Filter>Base\Headers</Filter>
     </ClInclude>
@@ -123,12 +120,6 @@
     <ClInclude Include="fileVBGO.h">
       <Filter>Objects\Example VBGOs\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Tree.h">
-      <Filter>Objects\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="TreeBit.h">
-      <Filter>Objects\Headers</Filter>
-    </ClInclude>
     <ClInclude Include="TPSCamera.h">
       <Filter>Objects\Headers</Filter>
     </ClInclude>
@@ -153,9 +144,6 @@
     <ClInclude Include="Boid.h">
       <Filter>Objects\Headers\Boids</Filter>
     </ClInclude>
-    <ClInclude Include="PredatorBoid.h">
-      <Filter>Objects\Headers\Boids</Filter>
-    </ClInclude>
     <ClInclude Include="BoidPrey.h">
       <Filter>Objects\Headers\Boids</Filter>
     </ClInclude>
@@ -174,6 +162,9 @@
     <ClInclude Include="Separation.h">
       <Filter>Base\Headers\Behaviours</Filter>
     </ClInclude>
+    <ClInclude Include="Avoidance.h">
+      <Filter>Base\Headers\Behaviours</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -186,9 +177,6 @@
       <Filter>Objects\Source</Filter>
     </ClCompile>
     <ClCompile Include="gameobject.cpp">
-      <Filter>Objects\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Terrain.cpp">
       <Filter>Objects\Source</Filter>
     </ClCompile>
     <ClCompile Include="VBGO.cpp">
@@ -215,12 +203,6 @@
     <ClCompile Include="VBCube.cpp">
       <Filter>Objects\Example VBGOs\Source</Filter>
     </ClCompile>
-    <ClCompile Include="treebit.cpp">
-      <Filter>Objects\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Tree.cpp">
-      <Filter>Objects\Source</Filter>
-    </ClCompile>
     <ClCompile Include="MarchCubes.cpp">
       <Filter>Objects\Example VBGOs\Source</Filter>
     </ClCompile>
@@ -245,9 +227,6 @@
     <ClCompile Include="BoidPrey.cpp">
       <Filter>Objects\Source\Boids</Filter>
     </ClCompile>
-    <ClCompile Include="PredatorBoid.cpp">
-      <Filter>Objects\Source\Boids</Filter>
-    </ClCompile>
     <ClCompile Include="BoidData.cpp">
       <Filter>Base\Source</Filter>
     </ClCompile>
@@ -261,6 +240,9 @@
       <Filter>Base\Source\Behaviours</Filter>
     </ClCompile>
     <ClCompile Include="Separation.cpp">
+      <Filter>Base\Source\Behaviours</Filter>
+    </ClCompile>
+    <ClCompile Include="Avoidance.cpp">
       <Filter>Base\Source\Behaviours</Filter>
     </ClCompile>
   </ItemGroup>

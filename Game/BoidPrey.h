@@ -10,11 +10,9 @@ class BoidData;
 class Separation;
 class Alignment;
 class Cohesion;
+class Avoidance;
 
-//=================================================================
-//procedurally generate a VBGO BoidPrey
-//each side be divided in to _size * _size squares (2 triangles per square)
-//=================================================================
+
 
 class BoidPrey : public VBGO
 {
@@ -34,10 +32,6 @@ public:
 	void activateBoid();
 	void deactivateBoid();
 
-	float getRed();
-	float getBlue();
-	float getGreen();
-
 protected:
 	//this is to allow custom versions of this which create the basic cube and then distort it
 	//see VBSpiral, VBSpiked and VBPillow
@@ -53,7 +47,6 @@ private:
 	void applyForce(Vector3& force);
 
 	void checkPosition();
-	bool limitPosition();
 	void setRandPos();
 
 	// Helper Function
@@ -76,18 +69,10 @@ private:
 	float boidBlue;	  // Blue colour Value for Vertices
 	float boidGreen;  // Green colour Value for Vertices
 
-	// Behaviours
-	Vector3 seek(Vector3& target);
-	Vector3 seperate(std::vector<BoidPrey*>& _boids);
-	Vector3 avoidPredator(GameData* _GD);
-	Vector3 align(std::vector<BoidPrey*>& _boids);
-	Vector3 cohesion(std::vector<BoidPrey*>& _boids);
-
-	void groupColor(std::vector<BoidPrey*>& _boids);
-
 	std::unique_ptr<Separation> m_separation;
 	std::unique_ptr<Alignment> m_alignment;
 	std::unique_ptr<Cohesion> m_cohesion;
+	std::unique_ptr<Avoidance> m_avoidance;
 
 	// Constants
 	const int zoneSize = 200;

@@ -9,17 +9,18 @@ using namespace DirectX::SimpleMath;
 
 class BoidPrey;
 class BoidData;
+class GameData;
 
-class Alignment
+class Avoidance
 {
 public:
 	friend class BoidPrey;
 
-	Alignment();
-	~Alignment();
+	Avoidance();
+	~Avoidance();
 
 protected:
-	Vector3 align(BoidPrey* _boid, BoidData* _BD, std::vector<BoidPrey*>& _boids);
+	Vector3 avoid(BoidPrey* _boid, BoidData* _BD, GameData* _GD);
 
 private:
 

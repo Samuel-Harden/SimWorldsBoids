@@ -6,6 +6,7 @@
 #include "Alignment.h"
 #include "Separation.h"
 #include "Cohesion.h"
+#include "Avoidance.h"
 
 
 BoidPrey::BoidPrey(int& _ID)
@@ -19,7 +20,7 @@ BoidPrey::BoidPrey(int& _ID)
 	acceleration(Vector3::Zero)
 {
 
-	float angle = randomFloat(0.5f, 6.2f);
+	float angle  = randomFloat(0.5f, 6.2f);
 	float angle1 = cos(angle);
 	float angle2 = sin(angle);
 	float angle3 = tan(angle);
@@ -29,9 +30,11 @@ BoidPrey::BoidPrey(int& _ID)
 	// Set random starting positon, inside the Designated zone
 	setRandPos();
 
-	m_alignment = std::make_unique<Alignment>();
+	// Create Behaviours
+	m_alignment  = std::make_unique<Alignment>();
 	m_separation = std::make_unique<Separation>();
-	m_cohesion = std::make_unique<Cohesion>();
+	m_cohesion   = std::make_unique<Cohesion>();
+	m_avoidance = std::make_unique<Avoidance>();
 }
 
 
@@ -143,22 +146,10 @@ void BoidPrey::deactivateBoid()
 
 
 
-void BoidPrey::setRandPos()
-{
-	// Set random starting positon, inside the Designated zone
-	float posX = randomFloat(-zoneSize, zoneSize);
-	float posY = randomFloat(-zoneSize, zoneSize);
-	float posZ = randomFloat(-zoneSize, zoneSize);
-
-	m_pos = Vector3(posX, posY, posZ);
-}
-
-
-
 void BoidPrey::run(std::vector<BoidPrey*>& _boids, GameData* _GD,
 	int _boidGroup, BoidData* _boidData)
 {
-	maxSpeed = _boidData->boidSpeed;
+	maxSpeed = _boidData->boidMaxSpeed;
 	if (maxSpeed < 0.1f)
 	{
 		maxSpeed = 0.1f;
@@ -182,23 +173,23 @@ void BoidPrey::run(std::vector<BoidPrey*>& _boids, GameData* _GD,
 
 void BoidPrey::flock(std::vector<BoidPrey*>& _boids, GameData* _GD, BoidData*& _boidData)
 {
-	Vector3 sep = seperate(_boids);    // Seperation
-	Vector3 run = avoidPredator(_GD);  // Avoid Predator (Player)
-	Vector3 ali = align(_boids);       // Alignment
-	Vector3 coh = cohesion(_boids);    // Cohesion
+	Vector3 sep = m_separation->separate(this, _boidData, _boids);  // Seperation
+	Vector3 ali = m_alignment->align(this, _boidData, _boids);      // Alignment
+	Vector3 coh = m_cohesion->cohesion(this, _boidData, _boids);    // Cohesion
+	Vector3 avoid = m_avoidance->avoid(this, _boidData, _GD);
 
 	//groupColor(_boids);              // Function not currently working...
 
 	// Arbitrarily weight these force
 	sep *= _boidData->sepWeight;
-	run *= _boidData->runWeight;
+	avoid *= _boidData->runWeight;
 	ali *= _boidData->aliWeight;
 	coh *= _boidData->cohWeight;
 
 	applyForce(sep);
-	applyForce(run);
 	applyForce(ali);
 	applyForce(coh);
+	applyForce(avoid);
 }
 
 
@@ -232,242 +223,6 @@ void BoidPrey::Tick(GameData* _GD)
 
 
 
-// STEER = DESIRED MINUS VELOCITY
-Vector3 BoidPrey::seek(Vector3& target)
-{
-	// A Vector pointing from the position to the target
-	Vector3 desired = (target - m_pos);
-
-	// Scale to max Speed
-	desired = XMVector3Normalize(desired);
-	desired = (desired * maxSpeed);
-
-	desired = XMVector3ClampLength(desired, 0.0f, maxSpeed);
-
-	// Steering = desired - velocity
-	Vector3 steer = (desired - velocity);
-
-	steer = XMVector3ClampLength(steer, 0.0f, maxForce);
-
-	return steer;
-}
-
-
-// Seperation
-// Method checks for nearby boids and steers away
-Vector3 BoidPrey::seperate(std::vector<BoidPrey*>& _boids)
-{
-	Vector3 steer = Vector3::Zero;
-	int count = 0;
-
-	// Check through every other boid
-	for (int i = 0; i < _boids.size(); i++)
-	{
-		if (_boids[i]->isActive == true)
-		{
-			float d = Vector3::Distance(m_pos, _boids[i]->getPos());
-
-			// if Boid is a neighbour
-			if (d > 0 && d < desiredSeperation)
-			{
-				// Calculate vector pointing away from neighbour
-				Vector3 diff = (m_pos - _boids[i]->getPos());
-				diff = XMVector3Normalize(diff);
-				diff = (diff / d); // Weight by distance
-				steer = (steer + diff);
-				count++;
-			}
-		}
-	}
-
-	// Average -- divided by how many
-	if (count > 0)
-	{
-		steer = (steer / count);
-	}
-
-	// As long as the vector is greater than 0
-	if (steer != Vector3::Zero)
-	{
-		steer = XMVector3ClampLength(steer, 0.0f, maxSpeed);
-
-		// Implement Reynolds: steering = desired - velocity
-		steer = XMVector3Normalize(steer);
-		steer = (steer * maxSpeed);
-		steer = (steer - velocity);
-
-		steer = XMVector3ClampLength(steer, 0.0f, maxSpeed);
-	}
-	return steer;
-}
-
-
-// Alignment
-// For every nearby boid in the system, calculate the average velocity
-Vector3 BoidPrey::align(std::vector<BoidPrey*>& _boids)
-{
-	// The position the boid wants to be
-	Vector3 sum = Vector3::Zero;
-	int count = 0;
-
-	// Check through every other boid
-	for (int i = 0; i < _boids.size(); i++)
-	{
-		if (_boids[i]->isActive == true)
-		{
-			float d = Vector3::Distance(m_pos, _boids[i]->getPos());
-
-			// if Boid is a neighbour
-			if (d > 0 && d < neighbourDistance)
-			{
-				sum = (sum + _boids[i]->getVelocity());
-				count++;
-			}
-		}
-	}
-
-	if (count > 0)
-	{
-		sum = sum / count;
-
-		sum = XMVector3ClampLength(sum, 0.0f, maxSpeed);
-
-		// Implement Reynolds: steering = desired - velocity
-		sum = XMVector3Normalize(sum);
-		sum = (sum * maxSpeed);
-		Vector3 steer = (sum - velocity);
-
-		steer = XMVector3ClampLength(steer, 0.0f, maxForce);
-
-		return steer;
-	}
-	else
-		return Vector3::Zero;
-}
-
-
-// Cohesion
-// For the average position (I.E. center) of all nearby boids,
-// calculate towards that position
-Vector3 BoidPrey::cohesion(std::vector<BoidPrey*>& _boids)
-{
-	Vector3 sum = Vector3::Zero; // start with an empty vector to accumulate all positions
-	int count = 0;
-
-	for (int i = 0; i < _boids.size(); i++)
-	{
-		if (_boids[i]->isActive == true)
-		{
-			float d = Vector3::Distance(m_pos, _boids[i]->getPos());
-
-			// if Boid is a neighbour
-			if (d > 0 && d < neighbourDistance)
-			{
-				sum = (sum + _boids[i]->getPos());
-				count++;
-			}
-		}
-	}
-
-	if (count > 0)
-	{
-		sum = (sum / count);
-
-		return seek(sum); // steer towards the position
-	}
-	else
-		return Vector3::Zero;
-}
-
-
-// Avoid Predator
-// Method checks for nearby predator and steers away
-Vector3 BoidPrey::avoidPredator(GameData* _GD)
-{
-	Vector3 steer = Vector3::Zero;
-	int count = 0;
-
-	float d = Vector3::Distance(m_pos, _GD->predatorPos);
-
-	// if Boid is a neighbour
-	if (d > 0 && d < (desiredSeperation * 5))
-	{
-		// Calculate vector pointing away from neighbour
-		Vector3 diff = (m_pos - (_GD->predatorPos));
-		diff = XMVector3Normalize(diff);
-		diff = (diff / d); // Weight by distance
-		steer = (steer + diff);
-	}
-
-	// As long as the vector is greater than 0
-	if (steer != Vector3::Zero)
-	{
-		steer = XMVector3ClampLength(steer, 0.0f, maxSpeed);
-
-		// Implement Reynolds: steering = desired - velocity
-		steer = XMVector3Normalize(steer);
-		steer = (steer * maxSpeed);
-		steer = (steer - velocity);
-
-		steer = XMVector3ClampLength(steer, 0.0f, (maxSpeed * 2));
-	}
-	return steer;
-}
-
-
-// only working for 2 dimentions
-bool BoidPrey::limitPosition()
-{
-	// If boid it too close to the edge, turn the around
-	//float d = Vector3::Distance(m_pos, Vector3::Zero);
-
-	if (Vector3::Distance(m_pos, Vector3::Zero) > zoneSize)
-	{
-		velocity = -velocity;
-		return false;
-	}
-
-	return true;
-}
-
-
-
-void BoidPrey::groupColor(std::vector<BoidPrey*>& _boids)
-{
-	float redSum = 0; // start with an empty vector to accumulate all positions
-	float blueSum = 0;
-	float greenSum = 0;
-	int count = 0;
-
-	for (int i = 0; i < _boids.size(); i++)
-	{
-		if (_boids[i]->isActive == true)
-		{
-			float d = Vector3::Distance(m_pos, _boids[i]->getPos());
-
-			// if Boid is a neighbour
-			if (d > 0 && d < neighbourDistance)
-			{
-				redSum = (redSum + _boids[i]->getRed());
-				blueSum = (blueSum + _boids[i]->getBlue());
-				greenSum = (greenSum + _boids[i]->getGreen());
-				count++;
-			}
-		}
-	}
-
-	if (count > 0)
-	{
-		redSum = (redSum / count);
-		blueSum = (blueSum / count);
-		greenSum = (greenSum / count);
-
-		// Set new Colour...
-	}
-}
-
-
-
 Vector3 BoidPrey::getVelocity()
 {
 	return velocity;
@@ -475,23 +230,14 @@ Vector3 BoidPrey::getVelocity()
 
 
 
-float BoidPrey::getRed()
+void BoidPrey::setRandPos()
 {
-	return boidRed;
-}
+	// Set random starting positon, inside the Designated zone
+	float posX = randomFloat(-zoneSize, zoneSize);
+	float posY = randomFloat(-zoneSize, zoneSize);
+	float posZ = randomFloat(-zoneSize, zoneSize);
 
-
-
-float BoidPrey::getBlue()
-{
-	return boidBlue;
-}
-
-
-
-float BoidPrey::getGreen()
-{
-	return boidGreen;
+	m_pos = Vector3(posX, posY, posZ);
 }
 
 

@@ -8,6 +8,11 @@ public:
 	friend class BoidPrey;
 	friend class BoidManager;
 
+	friend class Separation;
+	friend class Alignment;
+	friend class Cohesion;
+	friend class Avoidance;
+
 	BoidData();
 	~BoidData();
 
@@ -20,7 +25,8 @@ protected:
 	float cohWeight;
 
 	// Boid Variables
-	float boidSpeed;
+	float boidMaxSpeed;
+	float boidMaxForce;
 	float neighbourDist;
 	float desiredSep;
 

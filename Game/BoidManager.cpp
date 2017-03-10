@@ -123,7 +123,7 @@ BoidData* BoidManager::getBoidData()
 
 float& BoidManager::getBoidSpeed()
 {
-	return m_boidData->boidSpeed;
+	return m_boidData->boidMaxSpeed;
 }
 
 

@@ -119,7 +119,7 @@ Game::Game(ID3D11Device* _pd3dDevice, HWND _hWnd, HINSTANCE _hInstance)
 	TwInit(TW_DIRECT3D11, _pd3dDevice);
 	TwWindowSize(screenWidth, screenHeight);
 
-	myBar = TwNewBar("Boid Variables");
+	myBar = TwNewBar("Boid Parameters");
 	int myBarSize[2] = { 250, 180 };
 	TwSetParam(myBar, NULL, "size", TW_PARAM_INT32, 2, myBarSize);
 
@@ -135,19 +135,19 @@ Game::Game(ID3D11Device* _pd3dDevice, HWND _hWnd, HINSTANCE _hInstance)
 	TwAddVarRW(myBar, "View Distance: ", TW_TYPE_FLOAT,
 		&m_boidManager->getNeighbourDist(), nullptr);
 
-	TwAddVarRW(myBar, "Group Seperation: ", TW_TYPE_FLOAT,
+	TwAddVarRW(myBar, "Desired Seperation: ", TW_TYPE_FLOAT,
 		&m_boidManager->getDesiredSeperation(), nullptr);
 
-	TwAddVarRW(myBar, "Separation: ", TW_TYPE_FLOAT,
+	TwAddVarRW(myBar, "Separation - (Weight): ", TW_TYPE_FLOAT,
 		&m_boidManager->getSepWeight(), nullptr);
 
-	TwAddVarRW(myBar, "Alignment: ", TW_TYPE_FLOAT,
+	TwAddVarRW(myBar, "Alignment - (Weight): ", TW_TYPE_FLOAT,
 		&m_boidManager->getAliWeight(), nullptr);
 
-	TwAddVarRW(myBar, "Cohesion: ", TW_TYPE_FLOAT,
+	TwAddVarRW(myBar, "Cohesion - (Weight): ", TW_TYPE_FLOAT,
 		&m_boidManager->getCohWeight(), nullptr);
 
-	TwAddVarRW(myBar, "Run (Predators): ", TW_TYPE_FLOAT,
+	TwAddVarRW(myBar, "Avoidance - (Weight): ", TW_TYPE_FLOAT,
 		&m_boidManager->getRunWeight(), nullptr);
 
 	// End AntTweakBar Stuff ///////////////////////////////////////////////////

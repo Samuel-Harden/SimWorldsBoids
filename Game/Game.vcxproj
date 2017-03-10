@@ -126,6 +126,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Alignment.h" />
+    <ClInclude Include="Avoidance.h" />
     <ClInclude Include="Boid.h" />
     <ClInclude Include="BoidData.h" />
     <ClInclude Include="BoidManager.h" />
@@ -150,16 +151,12 @@
     <ClInclude Include="ObjectList.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Separation.h" />
-    <ClInclude Include="Terrain.h" />
     <ClInclude Include="TextGO2D.h" />
     <ClInclude Include="TPSCamera.h" />
-    <ClInclude Include="Tree.h" />
-    <ClInclude Include="TreeBit.h" />
     <ClInclude Include="BoidPrey.h" />
     <ClInclude Include="VBCube.h" />
     <ClInclude Include="VBGO.h" />
     <ClInclude Include="VBPillow.h" />
-    <ClInclude Include="PredatorBoid.h" />
     <ClInclude Include="VBSnail.h" />
     <ClInclude Include="VBSpiked.h" />
     <ClInclude Include="VBspiral.h" />
@@ -167,6 +164,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Alignment.cpp" />
+    <ClCompile Include="Avoidance.cpp" />
     <ClCompile Include="Boid.cpp" />
     <ClCompile Include="BoidData.cpp" />
     <ClCompile Include="BoidManager.cpp" />
@@ -185,15 +183,11 @@
     <ClCompile Include="MarchCubes.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Separation.cpp" />
-    <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TextGO2D.cpp" />
     <ClCompile Include="TPSCamera.cpp" />
-    <ClCompile Include="Tree.cpp" />
-    <ClCompile Include="treebit.cpp" />
     <ClCompile Include="BoidPrey.cpp" />
     <ClCompile Include="VBCube.cpp" />
     <ClCompile Include="VBGO.cpp" />
-    <ClCompile Include="PredatorBoid.cpp" />
     <ClCompile Include="VBSnail.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

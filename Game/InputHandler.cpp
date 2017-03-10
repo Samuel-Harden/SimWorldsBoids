@@ -13,14 +13,17 @@ InputHandler::InputHandler(HWND& _hWnd, HINSTANCE& _hInstance)
 	m_pKeyboard = nullptr;
 	m_pDirectInput = nullptr;
 
-	HRESULT hr = DirectInput8Create(_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_pDirectInput, NULL);
+	HRESULT hr = DirectInput8Create(_hInstance, DIRECTINPUT_VERSION,
+		IID_IDirectInput8, (void**)&m_pDirectInput, NULL);
 	hr = m_pDirectInput->CreateDevice(GUID_SysKeyboard, &m_pKeyboard, NULL);
 	hr = m_pKeyboard->SetDataFormat(&c_dfDIKeyboard);
-	hr = m_pKeyboard->SetCooperativeLevel(_hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+	hr = m_pKeyboard->SetCooperativeLevel(_hWnd,
+		DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
 
 	hr = m_pDirectInput->CreateDevice(GUID_SysMouse, &m_pMouse, NULL);
 	hr = m_pMouse->SetDataFormat(&c_dfDIMouse);
-	hr = m_pMouse->SetCooperativeLevel(_hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+	hr = m_pMouse->SetCooperativeLevel(_hWnd,
+		DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
 }
 
 
@@ -140,6 +143,8 @@ bool InputHandler::Tick(GameData* _GD, BoidManager* _boidManager,
 			return true;
 		}
 	}
+
+	return true;
 }
 
 

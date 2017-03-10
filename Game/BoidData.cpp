@@ -7,7 +7,8 @@ BoidData::BoidData()
 	runWeight(0.4f),
 	aliWeight(1.0f),
 	cohWeight(1.0f),
-	boidSpeed(0.5f),
+	boidMaxSpeed(0.5f),
+	boidMaxForce(0.03f),
 	neighbourDist(30.0f),
 	desiredSep(2.5f)
 {
