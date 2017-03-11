@@ -152,7 +152,7 @@ bool InputHandler::Tick(GameData* _GD, BoidManager* _boidManager,
 void InputHandler::playTick(GameData* _GD, BoidManager* _boidManager,
 	FreeCamera* _freeCam)
 {
-	
+	// Mouse inputs...
 	if ((m_mouseState.rgbButtons[0] & 0x80)/* &&
 		!(m_prevMouseState.rgbButtons[0] & 0x80)*/)
 	{

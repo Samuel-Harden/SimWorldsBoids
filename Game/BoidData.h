@@ -20,9 +20,10 @@ protected:
 
 	// Behaviour Weights
 	float sepWeight;
-	float runWeight;
+	float ffWeight;
 	float aliWeight;
 	float cohWeight;
+	float runWeight;
 
 	// Boid Variables
 	float boidMaxSpeed;

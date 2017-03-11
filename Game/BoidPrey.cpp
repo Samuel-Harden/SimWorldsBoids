@@ -9,12 +9,9 @@
 #include "Avoidance.h"
 
 
-BoidPrey::BoidPrey(int& _ID)
+BoidPrey::BoidPrey(int& _ID, int& _faction)
 	             : boidID (_ID),
-	             maxSpeed(0.5f),
-	            maxForce(0.03f),
-	   neighbourDistance(30.0f),
-	    desiredSeperation(2.5f),
+	          faction(_faction),
 	            isActive(false),
 	              newPos(false),
 	acceleration(Vector3::Zero)
@@ -34,7 +31,7 @@ BoidPrey::BoidPrey(int& _ID)
 	m_alignment  = std::make_unique<Alignment>();
 	m_separation = std::make_unique<Separation>();
 	m_cohesion   = std::make_unique<Cohesion>();
-	m_avoidance = std::make_unique<Avoidance>();
+	m_avoidance  = std::make_unique<Avoidance>();
 }
 
 
@@ -49,9 +46,8 @@ BoidPrey::~BoidPrey()
 
 void BoidPrey::init(ID3D11Device* GD)
 {
-	boidRed = randomFloat(0.0f, 1.0f);
-	boidBlue = randomFloat(0.0f, 1.0f);
-	boidGreen = randomFloat(0.0f, 1.0f);
+	// Set boids colour based on its faction
+	setFactionColour();
 
 	//calculate number of vertices and primatives
 	int numVerts = 12;
@@ -68,32 +64,32 @@ void BoidPrey::init(ID3D11Device* GD)
 
 	int vert = 0;
 
-	m_vertices[vert].Color = Color(boidRed, boidBlue, boidGreen, 1.0f);
+	m_vertices[vert].Color = Color(boidRed, boidGreen, boidBlue, 1.0f);
 	m_vertices[vert++].Pos = Vector3(0.0f, 0.0f, 0.0f);
-	m_vertices[vert].Color = Color(boidRed, boidBlue, boidGreen, 1.0f); // BottomFace 
+	m_vertices[vert].Color = Color(boidRed, boidGreen, boidBlue, 1.0f); // BottomFace 
 	m_vertices[vert++].Pos = Vector3(5.0f, 0.f, 0.0f);
-	m_vertices[vert].Color = Color(boidRed, boidBlue, boidGreen, 1.0f);
+	m_vertices[vert].Color = Color(boidRed, boidGreen, boidBlue, 1.0f);
 	m_vertices[vert++].Pos = Vector3(2.5f, 0.0f, 5.0f);
 
-	m_vertices[vert].Color = Color(boidRed, boidBlue, boidGreen, 1.0f);
+	m_vertices[vert].Color = Color(boidRed, boidGreen, boidBlue, 1.0f);
 	m_vertices[vert++].Pos = Vector3(5.0f, 0.0f, 0.0f);
-	m_vertices[vert].Color = Color(boidRed, boidBlue, boidGreen, 1.0f); // FlatFace
+	m_vertices[vert].Color = Color(boidRed, boidGreen, boidBlue, 1.0f); // FlatFace
 	m_vertices[vert++].Pos = Vector3(0.0f, 0.0f, 0.0f);
-	m_vertices[vert].Color = Color(boidRed, boidBlue, boidGreen, 1.0f);
+	m_vertices[vert].Color = Color(boidRed, boidGreen, boidBlue, 1.0f);
 	m_vertices[vert++].Pos = Vector3(2.5f, 1.25f, 0.0f);
 
-	m_vertices[vert].Color = Color(boidRed, boidBlue, boidGreen, 1.0f);
+	m_vertices[vert].Color = Color(boidRed, boidGreen, boidBlue, 1.0f);
 	m_vertices[vert++].Pos = Vector3(2.5f, 0.0f, 5.0f);
-	m_vertices[vert].Color = Color(boidRed, boidBlue, boidGreen, 1.0f); // Face2
+	m_vertices[vert].Color = Color(boidRed, boidGreen, boidBlue, 1.0f); // Face2
 	m_vertices[vert++].Pos = Vector3(2.5f, 1.25f, 0.0f);
-	m_vertices[vert].Color = Color(boidRed, boidBlue, boidGreen, 1.0f);
+	m_vertices[vert].Color = Color(boidRed, boidGreen, boidBlue, 1.0f);
 	m_vertices[vert++].Pos = Vector3(0.0f, 0.0f, 0.0f);
 
-	m_vertices[vert].Color = Color(boidRed, boidBlue, boidGreen, 1.0f);
+	m_vertices[vert].Color = Color(boidRed, boidGreen, boidBlue, 1.0f);
 	m_vertices[vert++].Pos = Vector3(2.5f, 1.25f, 0.0f);
-	m_vertices[vert].Color = Color(boidRed, boidBlue, boidGreen, 1.0f); // Face3
+	m_vertices[vert].Color = Color(boidRed, boidGreen, boidBlue, 1.0f); // Face3
 	m_vertices[vert++].Pos = Vector3(2.5f, 0.0f, 5.0f);
-	m_vertices[vert].Color = Color(boidRed, boidBlue, boidGreen, 1.0f);
+	m_vertices[vert].Color = Color(boidRed, boidGreen, boidBlue, 1.0f);
 	m_vertices[vert++].Pos = Vector3(5.0f, 0.0f, 0.0f);
 
 	//carry out some kind of transform on these vertices to make this object more interesting
@@ -129,6 +125,32 @@ void BoidPrey::init(ID3D11Device* GD)
 
 
 
+void BoidPrey::setFactionColour()
+{
+	switch (faction)
+	{
+	case 0:
+		boidRed = 1.0f;
+		boidGreen = 0.0f;
+		boidBlue = 0.0f;
+		break;
+
+	case 1:
+		boidRed = 0.0f;
+		boidGreen = 1.0f;
+		boidBlue = 0.0f;
+		break;
+	case 2:
+
+		boidRed = 0.4f;
+		boidGreen = 0.0f;
+		boidBlue = 1.0f;
+		break;
+	}
+}
+
+
+
 void BoidPrey::activateBoid()
 {
 	isActive = true;
@@ -149,22 +171,13 @@ void BoidPrey::deactivateBoid()
 void BoidPrey::run(std::vector<BoidPrey*>& _boids, GameData* _GD,
 	int _boidGroup, BoidData* _boidData)
 {
-	maxSpeed = _boidData->boidMaxSpeed;
-	if (maxSpeed < 0.1f)
-	{
-		maxSpeed = 0.1f;
-	}
-
-	neighbourDistance = _boidData->neighbourDist;
-	desiredSeperation = _boidData->desiredSep;
-
 	// If this boid, is in the current group to be updated, update behaviours...
-	if (boidID >= _boidGroup && boidID <= (_boidGroup + 100))
+	if (boidID >= _boidGroup && boidID <= (_boidGroup + 99))
 	{
 		flock(_boids, _GD, _boidData);
 	}
 
-	Tick(_GD);
+	Tick(_GD, _boidData);
 
 	checkPosition();
 }
@@ -176,20 +189,26 @@ void BoidPrey::flock(std::vector<BoidPrey*>& _boids, GameData* _GD, BoidData*& _
 	Vector3 sep = m_separation->separate(this, _boidData, _boids);  // Seperation
 	Vector3 ali = m_alignment->align(this, _boidData, _boids);      // Alignment
 	Vector3 coh = m_cohesion->cohesion(this, _boidData, _boids);    // Cohesion
-	Vector3 avoid = m_avoidance->avoid(this, _boidData, _GD);
+	Vector3 avoid = m_avoidance->avoid(this, _boidData, _boids);
+
+	Vector3 pred = m_avoidance->avoidPlayer(this, _boidData, _GD);
+
 
 	//groupColor(_boids);              // Function not currently working...
 
 	// Arbitrarily weight these force
 	sep *= _boidData->sepWeight;
-	avoid *= _boidData->runWeight;
+	avoid *= _boidData->ffWeight;
 	ali *= _boidData->aliWeight;
 	coh *= _boidData->cohWeight;
+
+	pred *= _boidData->runWeight;
 
 	applyForce(sep);
 	applyForce(ali);
 	applyForce(coh);
 	applyForce(avoid);
+	applyForce(pred);
 }
 
 
@@ -201,14 +220,14 @@ void BoidPrey::applyForce(Vector3& force)
 
 
 
-void BoidPrey::Tick(GameData* _GD)
+void BoidPrey::Tick(GameData* _GD, BoidData* _BD)
 {
 	// update velocity
 	velocity = (velocity + acceleration);
 
 	velocity = XMVector3Normalize(velocity);
 
-	velocity = XMVector3ClampLength(velocity, 0.0f, maxSpeed);
+	velocity = XMVector3ClampLength(velocity, 0.0f, _BD->boidMaxSpeed);
 
 	m_pos = (m_pos + velocity);
 
@@ -223,9 +242,16 @@ void BoidPrey::Tick(GameData* _GD)
 
 
 
-Vector3 BoidPrey::getVelocity()
+Vector3 BoidPrey::getVelocity() const
 {
 	return velocity;
+}
+
+
+
+int BoidPrey::getFaction()
+{
+	return faction;
 }
 
 

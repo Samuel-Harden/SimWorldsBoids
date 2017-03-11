@@ -32,26 +32,35 @@ public:
 
 	int activeBoids;
 
-	BoidData* getBoidData();
+	BoidData* getBoidData(int _faction);
 
-	float& getBoidSpeed();
-	float& getNeighbourDist();
-	float& getDesiredSeperation();
-	float& getSepWeight();
-	float& getAliWeight();
-	float& getCohWeight();
-	float& getRunWeight();
+	float& getBoidSpeed(int _faction);
+	float& getNeighbourDist(int _faction);
+	float& getDesiredSeperation(int _faction);
+	float& getSepWeight(int _faction);
+	float& getAliWeight(int _faction);
+	float& getCohWeight(int _faction);
+	float& getFlightFightWeight(int _faction);
+
+	// Player related
+	float& getRunWeight(int _faction);
 
 
 protected:
 
 private:
 
-	void updatePreyBoids(GameData* _GD);
+	void updateBoids(GameData* _GD);
 
 	std::vector<BoidPrey*> preyboids;
 
-	BoidData* m_boidData;
+	// Vector to hold containers of faction Variables
+	std::vector<BoidData*> m_boidData;
+
+	// Faction Variables
+	BoidData* boidDataRed;
+	BoidData* boidDataGreen;
+	BoidData* boidDataPurple;
 
 	BoidPrey* boid;
 

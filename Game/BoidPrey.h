@@ -17,20 +17,22 @@ class Avoidance;
 class BoidPrey : public VBGO
 {
 public:
-	BoidPrey(int& _ID);
+	BoidPrey(int& _ID, int& _faction);
 	virtual ~BoidPrey();
 
 	//initialise the Veretx and Index buffers for the cube
 	void init(ID3D11Device* _GD);
 
-	void Tick(GameData* _GD);
+	void Tick(GameData* _GD, BoidData* _BD);
 	void run(std::vector<BoidPrey*>& boids, GameData* _GD, int _boidGroup, BoidData* _boidData);
 
-	Vector3 getVelocity();
+	Vector3 getVelocity() const;
 
 	bool isActive;
 	void activateBoid();
 	void deactivateBoid();
+
+	int getFaction();
 
 protected:
 	//this is to allow custom versions of this which create the basic cube and then distort it
@@ -46,6 +48,8 @@ private:
 
 	void applyForce(Vector3& force);
 
+	void setFactionColour();
+
 	void checkPosition();
 	void setRandPos();
 
@@ -54,16 +58,11 @@ private:
 
 	bool newPos;
 
-	Vector3 position;
 	Vector3 velocity;
 	Vector3 acceleration;
 
-	float maxForce;
-	float maxSpeed;
-	float neighbourDistance;
-	float desiredSeperation;
-
 	int boidID;
+	int faction;
 
 	float boidRed;	  // Red colour Value for Vertices
 	float boidBlue;	  // Blue colour Value for Vertices

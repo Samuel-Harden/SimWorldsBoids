@@ -77,15 +77,16 @@ protected:
 	void PlayTick();
 
 private:
-	const int maxBoids = 1000;
+	const int maxBoids = 999;
 
 	float screenWidth;
 	float screenHeight;
 
 	void displayMainMenu();
 	void displayPauseMenu();
+	void setTweakBar(ID3D11Device* _pd3dDevice);
 
 	void displayText(const char* input, int& posX, int& posY);
 
-	TwBar* myBar;
+	TwBar* boidVariables;
 };

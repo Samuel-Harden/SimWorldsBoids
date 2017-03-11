@@ -20,7 +20,8 @@ public:
 	~Avoidance();
 
 protected:
-	Vector3 avoid(BoidPrey* _boid, BoidData* _BD, GameData* _GD);
+	Vector3 avoid(BoidPrey* _boid, BoidData* _BD, std::vector<BoidPrey*>& _boids);
+	Vector3 avoidPlayer(BoidPrey* _boid, BoidData* _BD, GameData* _GD);
 
 private:
 

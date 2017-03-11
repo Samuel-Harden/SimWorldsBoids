@@ -3,14 +3,15 @@
 
 
 BoidData::BoidData()
-	: sepWeight(0.5f),
-	runWeight(0.4f),
-	aliWeight(1.0f),
-	cohWeight(1.0f),
-	boidMaxSpeed(0.5f),
-	boidMaxForce(0.03f),
-	neighbourDist(30.0f),
-	desiredSep(2.5f)
+	  : sepWeight(0.5f),
+	     ffWeight(0.4f),
+	    runWeight(0.2f),
+	    aliWeight(1.0f),
+	    cohWeight(1.0f),
+     boidMaxSpeed(0.5f),
+    boidMaxForce(0.03f),
+   neighbourDist(30.0f),
+	   desiredSep(5.0f)
 {
 
 }

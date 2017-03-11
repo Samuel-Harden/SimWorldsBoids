@@ -115,43 +115,7 @@ Game::Game(ID3D11Device* _pd3dDevice, HWND _hWnd, HINSTANCE _hInstance)
 	camera_state = CameraState::FREE_CAMERA;
 	current_cam = m_freeCam;
 
-	// AntTweakBar Setup
-	TwInit(TW_DIRECT3D11, _pd3dDevice);
-	TwWindowSize(screenWidth, screenHeight);
-
-	myBar = TwNewBar("Boid Parameters");
-	int myBarSize[2] = { 250, 180 };
-	TwSetParam(myBar, NULL, "size", TW_PARAM_INT32, 2, myBarSize);
-
-
-	// AntTweakBar Buttons /////////////////////////////////////////////////////
-
-	TwAddVarRO(myBar, "Number of Boids: ", TW_TYPE_INT32,
-		&m_boidManager->activeBoids, nullptr);
-
-	TwAddVarRW(myBar, "BoidSpeed: ", TW_TYPE_FLOAT,
-		&m_boidManager->getBoidSpeed(), nullptr);
-
-	TwAddVarRW(myBar, "View Distance: ", TW_TYPE_FLOAT,
-		&m_boidManager->getNeighbourDist(), nullptr);
-
-	TwAddVarRW(myBar, "Desired Seperation: ", TW_TYPE_FLOAT,
-		&m_boidManager->getDesiredSeperation(), nullptr);
-
-	TwAddVarRW(myBar, "Separation - (Weight): ", TW_TYPE_FLOAT,
-		&m_boidManager->getSepWeight(), nullptr);
-
-	TwAddVarRW(myBar, "Alignment - (Weight): ", TW_TYPE_FLOAT,
-		&m_boidManager->getAliWeight(), nullptr);
-
-	TwAddVarRW(myBar, "Cohesion - (Weight): ", TW_TYPE_FLOAT,
-		&m_boidManager->getCohWeight(), nullptr);
-
-	TwAddVarRW(myBar, "Avoidance - (Weight): ", TW_TYPE_FLOAT,
-		&m_boidManager->getRunWeight(), nullptr);
-
-	// End AntTweakBar Stuff ///////////////////////////////////////////////////
-
+	setTweakBar(_pd3dDevice);
 
 	//lock the cursor to the centre of the window
 	RECT window;
@@ -284,6 +248,8 @@ void Game::Draw(ID3D11DeviceContext* _pd3dImmediateContext)
 	//update the constant buffer for the rendering of VBGOs
 	VBGO::UpdateConstantBuffer(m_DD);
 
+	m_boidManager->Draw(m_DD);
+
 	if (game_state == GameState::GS_MAIN_MENU)
 	{
 		displayMainMenu();
@@ -304,14 +270,12 @@ void Game::Draw(ID3D11DeviceContext* _pd3dImmediateContext)
 		}
 		m_DD2D->m_Sprites->End();
 
-		m_boidManager->Draw(m_DD);
-
 		TwDraw();
 	}
 
 	if (game_state == GameState::GS_PAUSE)
 	{
-		//displayPauseMenu();
+		displayPauseMenu();
 	}
 
 	//drawing text screws up the Depth Stencil State, this puts it back again!
@@ -339,8 +303,8 @@ void Game::displayPauseMenu()
 {
 	m_DD2D->m_Sprites->Begin();
 
-	int posx = screenWidth / 10 * 1;
-	int posy = screenHeight / 10 * 1;
+	int posx = screenWidth / 2;
+	int posy = screenHeight / 2;
 
 	displayText("Simulation Paused", posx, posy);
 
@@ -356,4 +320,116 @@ void Game::displayText(const char* input, int& posX, int& posY)
 		(input),
 		XMFLOAT2((posY), (posY)),
 		Colors::White);
+}
+
+
+
+void Game::setTweakBar(ID3D11Device* _pd3dDevice)
+{
+	// AntTweakBar Setup
+	TwInit(TW_DIRECT3D11, _pd3dDevice);
+	TwWindowSize(screenWidth, screenHeight);
+
+	boidVariables = TwNewBar("Boid Parameters:");
+	int myBarSize[2] = { 340, 510 };
+	TwSetParam(boidVariables, NULL, "size", TW_PARAM_INT32, 2, myBarSize);
+
+
+	// AntTweakBar Buttons /////////////////////////////////////////////////////
+
+	TwAddButton(boidVariables, "comment1", NULL, NULL, " label='Red Faction: ' ");
+
+
+	// RED FACTION VARIABLES
+	TwAddVarRW(boidVariables, "Red   - BoidSpeed: ", TW_TYPE_FLOAT,
+		&m_boidManager->getBoidSpeed(0), "min=0.1 max=1.0 step=0.1");
+
+	TwAddVarRW(boidVariables, "Red   - View Distance: ", TW_TYPE_FLOAT,
+		&m_boidManager->getNeighbourDist(0), "min=0.0 max=500.0 step=1.0");
+
+	TwAddVarRW(boidVariables, "Red   - Desired Seperation: ", TW_TYPE_FLOAT,
+		&m_boidManager->getDesiredSeperation(0), "min=0.0 max=10.0 step=0.1");
+
+	TwAddVarRW(boidVariables, "Red   - Separation - (Weight): ", TW_TYPE_FLOAT,
+		&m_boidManager->getSepWeight(0), "min=-50.0 max=50.0 step=0.1");
+
+	TwAddVarRW(boidVariables, "Red   - Alignment - (Weight): ", TW_TYPE_FLOAT,
+		&m_boidManager->getAliWeight(0), "min=-50.0 max=50.0 step=0.1");
+
+	TwAddVarRW(boidVariables, "Red   - Cohesion - (Weight): ", TW_TYPE_FLOAT,
+		&m_boidManager->getCohWeight(0), "min=-50.0 max=50.0 step=0.1");
+
+	TwAddVarRW(boidVariables, "Red   - Fight/Flight - (Weight): ", TW_TYPE_FLOAT,
+		&m_boidManager->getFlightFightWeight(0), "min=-50.0 max=50.0 step=0.1");
+
+	TwAddVarRW(boidVariables, "Red   - Avoid Player - (Weight): ", TW_TYPE_FLOAT,
+		&m_boidManager->getRunWeight(0), "min=-50.0 max=50.0 step=0.1");
+
+	TwAddSeparator(boidVariables, "sep1", NULL);
+	TwDefine(" barName/sep1 group='Parameters1' ");
+
+	TwAddButton(boidVariables, "comment2", NULL, NULL, " label='Green Faction: ' ");
+
+	//GREEN FACTION VARIABLES
+	TwAddVarRW(boidVariables, "Green - BoidSpeed: ", TW_TYPE_FLOAT,
+		&m_boidManager->getBoidSpeed(1), "min=0.1 max=1.0 step=0.1");
+
+	TwAddVarRW(boidVariables, "Green - View Distance: ", TW_TYPE_FLOAT,
+		&m_boidManager->getNeighbourDist(1), "min=0.0 max=500.0 step=1.0");
+
+	TwAddVarRW(boidVariables, "Green - Desired Seperation: ", TW_TYPE_FLOAT,
+		&m_boidManager->getDesiredSeperation(1), "min=0.0 max=10.0 step=0.1");
+
+	TwAddVarRW(boidVariables, "Green - Separation - (Weight): ", TW_TYPE_FLOAT,
+		&m_boidManager->getSepWeight(1), "min=-50.0 max=50.0 step=0.1");
+
+	TwAddVarRW(boidVariables, "Green - Alignment - (Weight): ", TW_TYPE_FLOAT,
+		&m_boidManager->getAliWeight(1), "min=-50.0 max=50.0 step=0.1");
+
+	TwAddVarRW(boidVariables, "Green - Cohesion - (Weight): ", TW_TYPE_FLOAT,
+		&m_boidManager->getCohWeight(1), "min=-50.0 max=50.0 step=0.1");
+
+	TwAddVarRW(boidVariables, "Green - Fight/Flight - (Weight): ", TW_TYPE_FLOAT,
+		&m_boidManager->getFlightFightWeight(1), "min=-50.0 max=50.0 step=0.1");
+
+	TwAddVarRW(boidVariables, "Green   - Avoid Player - (Weight): ", TW_TYPE_FLOAT,
+		&m_boidManager->getRunWeight(1), "min=-50.0 max=50.0 step=0.1");
+
+	TwAddSeparator(boidVariables, "sep2", NULL);
+	TwDefine(" barName/sep2 group='Parameters2' ");
+
+	TwAddButton(boidVariables, "comment3", NULL, NULL, " label='Purple Faction: ' ");
+
+	//BLUE FACTION VARIABLES
+	TwAddVarRW(boidVariables, "Purple   - BoidSpeed: ", TW_TYPE_FLOAT,
+		&m_boidManager->getBoidSpeed(2), "min=0.1 max=1.0 step=0.1");
+
+	TwAddVarRW(boidVariables, "Purple   - View Distance: ", TW_TYPE_FLOAT,
+		&m_boidManager->getNeighbourDist(2), "min=0.0 max=500.0 step=1.0");
+
+	TwAddVarRW(boidVariables, "Purple   - Desired Seperation: ", TW_TYPE_FLOAT,
+		&m_boidManager->getDesiredSeperation(2), "min=0.0 max=10.0 step=0.1");
+
+	TwAddVarRW(boidVariables, "Purple   - Separation - (Weight): ", TW_TYPE_FLOAT,
+		&m_boidManager->getSepWeight(2), "min=-50.0 max=50.0 step=0.1");
+
+	TwAddVarRW(boidVariables, "Purple   - Alignment - (Weight): ", TW_TYPE_FLOAT,
+		&m_boidManager->getAliWeight(2), "min=-50.0 max=50.0 step=0.1");
+
+	TwAddVarRW(boidVariables, "Purple   - Cohesion - (Weight): ", TW_TYPE_FLOAT,
+		&m_boidManager->getCohWeight(2), "min=-50.0 max=50.0 step=0.1");
+
+	TwAddVarRW(boidVariables, "Purple   - Fight/Flight - (Weight): ", TW_TYPE_FLOAT,
+		&m_boidManager->getFlightFightWeight(2), "min=-50.0 max=50.0 step=0.1");
+
+	TwAddVarRW(boidVariables, "Purple   - Avoid Player - (Weight): ", TW_TYPE_FLOAT,
+		&m_boidManager->getRunWeight(2), "min=-50.0 max=50.0 step=0.1");
+
+	TwAddSeparator(boidVariables, "sep3", NULL);
+	TwDefine(" barName/sep3 group='Parameters2' ");
+
+	TwAddVarRO(boidVariables, "Total no Boids: ", TW_TYPE_INT32,
+		&m_boidManager->activeBoids, nullptr);
+
+	// End AntTweakBar Stuff ///////////////////////////////////////////////////
 }
