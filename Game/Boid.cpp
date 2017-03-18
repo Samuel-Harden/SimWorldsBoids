@@ -1,43 +1,142 @@
 #include "Boid.h"
+
 #include "GameData.h"
-#include <math.h>
-#include "SimpleMath.h"
-#include <vector>
+#include "BoidData.h"
 
-Boid::Boid(string _fileName, ID3D11Device* _pd3dDevice, IEffectFactory* _EF) : CMOGO(_fileName, _pd3dDevice, _EF)
+#include "Behaviour.h"
+
+
+Boid::Boid(int& _ID, int& _faction)
+	             : boidID (_ID),
+	          faction(_faction),
+	            isActive(false),
+	              newPos(false),
+	acceleration(Vector3::Zero)
 {
-	desiredSeperation = 5.0f;;
 
-	acceleration = Vector3::Zero;
-
-	velocity.x = randomFloat(0.5f, 2.0f);
-	velocity.y = randomFloat(0.5f, 2.0f);
-	velocity.z = randomFloat(0.5f, 2.0f);
-
-	float angle = randomFloat(0.5f, 6.2f);
+	float angle  = randomFloat(0.5f, 6.2f);
 	float angle1 = cos(angle);
 	float angle2 = sin(angle);
 	float angle3 = tan(angle);
 
-	velocity = Vector3(angle1, angle2, angle3);
+	velocity = Vector3(angle1, angle2, angle2);
 
-	maxSpeed = 0.5f;
-	maxForce = 0.03f;
-
-	neighbourDistance = 25.0f;
-
-	m_pos = Vector3::Zero;
-
-	isActive = false;
-
-	zoneSize = 30;
+	// Set random starting positon, inside the Designated zone
+	setRandPos();
 }
 
 
 
 Boid::~Boid()
 {
+	
+}
 
+
+
+void Boid::init(ID3D11Device* GD)
+{
+	// Set boids colour based on its faction
+	setFactionColour();
+
+	//calculate number of vertices and primatives
+	int numVerts = 12;
+	m_numPrims = numVerts / 3;
+	m_vertices = new myVertex[numVerts];
+	WORD* indices = new WORD[numVerts];
+
+	//as using the standard VB shader set the tex-coords somewhere safe
+	for (int i = 0; i<numVerts; i++)
+	{
+		indices[i] = i;
+		m_vertices[i].texCoord = Vector2::One;
+	}
+
+	int vert = 0;
+
+	m_vertices[vert].Color = Color(boidRed, boidGreen, boidBlue, 1.0f);
+	m_vertices[vert++].Pos = Vector3(0.0f, 0.0f, 0.0f);
+	m_vertices[vert].Color = Color(boidRed, boidGreen, boidBlue, 1.0f); // BottomFace 
+	m_vertices[vert++].Pos = Vector3(5.0f, 0.f, 0.0f);
+	m_vertices[vert].Color = Color(boidRed, boidGreen, boidBlue, 1.0f);
+	m_vertices[vert++].Pos = Vector3(2.5f, 0.0f, 5.0f);
+
+	m_vertices[vert].Color = Color(boidRed, boidGreen, boidBlue, 1.0f);
+	m_vertices[vert++].Pos = Vector3(5.0f, 0.0f, 0.0f);
+	m_vertices[vert].Color = Color(boidRed, boidGreen, boidBlue, 1.0f); // FlatFace
+	m_vertices[vert++].Pos = Vector3(0.0f, 0.0f, 0.0f);
+	m_vertices[vert].Color = Color(boidRed, boidGreen, boidBlue, 1.0f);
+	m_vertices[vert++].Pos = Vector3(2.5f, 1.25f, 0.0f);
+
+	m_vertices[vert].Color = Color(boidRed, boidGreen, boidBlue, 1.0f);
+	m_vertices[vert++].Pos = Vector3(2.5f, 0.0f, 5.0f);
+	m_vertices[vert].Color = Color(boidRed, boidGreen, boidBlue, 1.0f); // Face2
+	m_vertices[vert++].Pos = Vector3(2.5f, 1.25f, 0.0f);
+	m_vertices[vert].Color = Color(boidRed, boidGreen, boidBlue, 1.0f);
+	m_vertices[vert++].Pos = Vector3(0.0f, 0.0f, 0.0f);
+
+	m_vertices[vert].Color = Color(boidRed, boidGreen, boidBlue, 1.0f);
+	m_vertices[vert++].Pos = Vector3(2.5f, 1.25f, 0.0f);
+	m_vertices[vert].Color = Color(boidRed, boidGreen, boidBlue, 1.0f); // Face3
+	m_vertices[vert++].Pos = Vector3(2.5f, 0.0f, 5.0f);
+	m_vertices[vert].Color = Color(boidRed, boidGreen, boidBlue, 1.0f);
+	m_vertices[vert++].Pos = Vector3(5.0f, 0.0f, 0.0f);
+
+	//carry out some kind of transform on these vertices to make this object more interesting
+	Transform();
+
+	//calculate the normals for the basic lighting in the base shader
+	for (int i = 0; i<m_numPrims; i++)
+	{
+		WORD V1 = 3 * i;
+		WORD V2 = 3 * i + 1;
+		WORD V3 = 3 * i + 2;
+
+		//build normals
+		Vector3 norm;
+		Vector3 vec1 = m_vertices[V1].Pos - m_vertices[V2].Pos;
+		Vector3 vec2 = m_vertices[V3].Pos - m_vertices[V2].Pos;
+		norm = vec1.Cross(vec2);
+		norm.Normalize();
+
+		m_vertices[V1].Norm = norm;
+		m_vertices[V2].Norm = norm;
+		m_vertices[V3].Norm = norm;
+	}
+
+
+	BuildIB(GD, indices);
+	BuildVB(GD, numVerts, m_vertices);
+
+	delete[] indices;    //this is no longer needed as this is now in the index Buffer
+	delete[] m_vertices; //this is no longer needed as this is now in the Vertex Buffer
+	m_vertices = nullptr;
+}
+
+
+
+void Boid::setFactionColour()
+{
+	switch (faction)
+	{
+	case 0:
+		boidRed = 1.0f;
+		boidGreen = 0.0f;
+		boidBlue = 0.0f;
+		break;
+
+	case 1:
+		boidRed = 0.0f;
+		boidGreen = 1.0f;
+		boidBlue = 0.0f;
+		break;
+	case 2:
+
+		boidRed = 0.4f;
+		boidGreen = 0.0f;
+		boidBlue = 1.0f;
+		break;
+	}
 }
 
 
@@ -48,28 +147,59 @@ void Boid::activateBoid()
 }
 
 
-
-void Boid::run(std::vector<Boid*>& _boids, GameData* _GD)
+void Boid::deactivateBoid()
 {
-	flock(_boids);
-	Tick(_GD);
+	// Deactivate Boid
+	isActive = false;
+
+	// Set new Random Pos
+	setRandPos();
 }
 
 
 
-void Boid::flock(std::vector<Boid*>& _boids)
+void Boid::run(std::vector<Boid*>& _boids, GameData* _GD,
+	int _boidGroup, BoidData* _boidData, std::vector<Behaviour*> _behaviours)
 {
-	Vector3 sep = seperate(_boids);  // Seperation
-	Vector3 ali = align(_boids);     // Alignment
-	Vector3 coh = cohesion(_boids);  // Cohesion
+	// If this boid, is in the current group to be updated, update behaviours...
+	if (boidID >= _boidGroup && boidID <= (_boidGroup + 99))
+	{
+		flock(_boids, _GD, _boidData,  _behaviours);
+	}
+
+	Tick(_GD, _boidData);
+
+	checkPosition();
+}
+
+
+
+void Boid::flock(std::vector<Boid*>& _boids, GameData* _GD,
+	BoidData*& _boidData, std::vector<Behaviour*> _behaviours)
+{
+	Vector3 ali   = _behaviours[0]->calculateBehaviour(this, _boidData, _boids);    // Alignment
+	Vector3 avoid = _behaviours[1]->calculateBehaviour(this, _boidData, _boids);    // Avoidance
+	Vector3 coh   = _behaviours[2]->calculateBehaviour(this, _boidData, _boids);    // Cohesion
+	Vector3 sep   = _behaviours[3]->calculateBehaviour(this, _boidData, _boids);    // Seperation
+
+	//Vector3 pred = m_avoidance->avoidPlayer(this, _boidData, _GD);
+
+
+	//groupColor(_boids);              // Function not currently working...
 
 	// Arbitrarily weight these force
-	sep *= 1.5f;
-	ali *= 1.0;
-	coh *= 1.0f;
+	sep *= _boidData->sepWeight;
+	avoid *= _boidData->ffWeight;
+	ali *= _boidData->aliWeight;
+	coh *= _boidData->cohWeight;
+
+	//pred *= _boidData->runWeight;
+
 	applyForce(sep);
 	applyForce(ali);
 	applyForce(coh);
+	applyForce(avoid);
+	//applyForce(pred);
 }
 
 
@@ -81,202 +211,50 @@ void Boid::applyForce(Vector3& force)
 
 
 
-void Boid::Tick(GameData* _GD)
+void Boid::Tick(GameData* _GD, BoidData* _BD)
 {
 	// update velocity
 	velocity = (velocity + acceleration);
 
 	velocity = XMVector3Normalize(velocity);
 
-	velocity = XMVector3ClampLength(velocity, 0.0f, maxSpeed);
+	velocity = XMVector3ClampLength(velocity, 0.0f, _BD->boidMaxSpeed);
 
-	//m_dir = velocity - m_pos;
-
-	//direction = m_pos - velocity;
-	//direction.Normalize();
-
-	//m_pos += direction;
 	m_pos = (m_pos + velocity);
 
-	//Matrix scaleMat = Matrix::CreateScale(m_scale);
-	//Matrix rotTransMat = Matrix::CreateWorld(m_pos, m_dir, Vector3::Up);
+	Matrix scaleMat = Matrix::CreateScale(m_scale);
+	Matrix rotTransMat = Matrix::CreateWorld(m_pos, -velocity, Vector3::Up);
 
-	//m_worldMat = m_fudge * scaleMat * rotTransMat;
+	m_worldMat = m_fudge * scaleMat * rotTransMat;
 
-	// Position, (Pos + Direction), up
-	//m_viewMat = Matrix::CreateLookAt(m_pos, Vector3(12.0f, 12.0f, 12.0f), Vector3::Up);
-	//m_viewMat.Invert();
-
-	//build up the world matrix depending on the new position of the GameObject
-	//the assumption is that this class will be inherited by the class that ACTUALLY changes this
-	//Matrix  scaleMat = Matrix::CreateScale(m_scale);
-	//m_rotMat = Matrix::CreateFromYawPitchRoll(m_yaw, m_pitch, m_roll); //possible not the best way of doing this!
-	//Matrix  transMat = Matrix::CreateTranslation(m_pos);
-
-	//m_worldMat = m_fudge * scaleMat * m_rotMat * transMat;// * m_viewMat;
-
-    // reset acceleration to 0 each cycle
+	// reset acceleration to 0 each cycle
 	acceleration = Vector3::Zero;
-
-	checkPosition();
-
-	CMOGO::Tick(_GD);
 }
 
 
 
-// STEER = DESIRED MINUS VELOCITY
-Vector3 Boid::seek(Vector3& target)
-{ 
-	// A Vector pointing from the position to the target
-	Vector3 desired = (target - m_pos);
-
-	// Scale to max Speed
-	desired = XMVector3Normalize(desired);
-	desired = (desired * maxSpeed);
-
-	desired = XMVector3ClampLength(desired, 0.0f, maxSpeed);
-
-	// Steering = desired - velocity
-	Vector3 steer = (desired - velocity);
-
-	steer = XMVector3ClampLength(steer, 0.0f, maxForce);
-
-	return steer;
-}
-
-
-// Seperation
-// Method checks for nearby boids and steers away
-Vector3 Boid::seperate(std::vector<Boid*>& _boids)
-{
-	Vector3 steer = Vector3::Zero;
-	int count = 0;
-
-	// Check through every other boid
-	for (int i = 0; i < _boids.size(); i++)
-	{
-		if (_boids[i]->isActive == true)
-		{
-			float d = Vector3::Distance(m_pos, _boids[i]->getPos());
-
-			// if Boid is a neighbour
-			if (d > 0 && d < desiredSeperation)
-			{
-				// Calculate vector pointing away from neighbour
-				Vector3 diff = (m_pos - _boids[i]->getPos());
-				diff = XMVector3Normalize(diff);
-				diff = (diff / d); // Weight by distance
-				steer = (steer + diff);
-				count++;
-			}
-		}
-	}
-
-	// Average -- divided by how many
-	if (count > 0)
-	{
-		steer = (steer / count);
-	}
-
-	// As long as the vector is greater than 0
-	if (steer != Vector3::Zero)
-	{
-		steer = XMVector3ClampLength(steer, 0.0f, maxSpeed);
-
-		// Implement Reynolds: steering = desired - velocity
-		steer = XMVector3Normalize(steer);
-		steer = (steer * maxSpeed);
-		steer = (steer - velocity);
-
-		steer = XMVector3ClampLength(steer, 0.0f, maxSpeed);
-	}
-	return steer;
-}
-
-
-// Alignment
-// For every nearby boid in the system, calculate the average velocity
-Vector3 Boid::align(std::vector<Boid*>& _boids)
-{
-	// The position the boid wants to be
-	Vector3 sum = Vector3::Zero;
-	int count = 0;
-
-	// Check through every other boid
-	for (int i = 0; i < _boids.size(); i++)
-	{
-		if (_boids[i]->isActive == true)
-		{
-			float d = Vector3::Distance(m_pos, _boids[i]->getPos());
-
-			// if Boid is a neighbour
-			if (d > 0 && d < neighbourDistance)
-			{
-				sum = ( sum + _boids[i]->getVelocity());
-				count++;
-			}
-		}
-	}
-
-	if (count > 0)
-	{
-		sum = sum / count;
-
-		sum = XMVector3ClampLength(sum, 0.0f, maxSpeed);
-
-		// Implement Reynolds: steering = desired - velocity
-		sum = XMVector3Normalize(sum);
-		sum = (sum * maxSpeed);
-		Vector3 steer = (sum - velocity);
-
-		steer = XMVector3ClampLength(steer, 0.0f, maxForce);
-
-		return steer;
-	}
-	else
-		return Vector3::Zero;
-}
-
-
-// Cohesion
-// For the average position (I.E. center) of all nearby boids,
-// calculate towards that position
-Vector3 Boid::cohesion(std::vector<Boid*>& _boids)
-{
-	Vector3 sum = Vector3::Zero; // start with an empty vector to accumulate all positions
-	int count = 0;
-
-	for (int i = 0; i < _boids.size(); i++)
-	{
-		if (_boids[i]->isActive == true)
-		{
-			float d = Vector3::Distance(m_pos, _boids[i]->getPos());
-
-			// if Boid is a neighbour
-			if (d > 0 && d < neighbourDistance)
-			{
-				sum = (sum + _boids[i]->getPos());
-				count++;
-			}
-		}
-	}
-
-	if (count > 0)
-	{
-		sum = ( sum / count);
-
-		return seek(sum); // steer towards the position
-	}
-	else
-		return Vector3::Zero;
-}
-
-
-
-Vector3 Boid::getVelocity()
+Vector3 Boid::getVelocity() const
 {
 	return velocity;
+}
+
+
+
+int Boid::getFaction()
+{
+	return faction;
+}
+
+
+
+void Boid::setRandPos()
+{
+	// Set random starting positon, inside the Designated zone
+	float posX = randomFloat(-zoneSize, zoneSize);
+	float posY = randomFloat(-zoneSize, zoneSize);
+	float posZ = randomFloat(-zoneSize, zoneSize);
+
+	m_pos = Vector3(posX, posY, posZ);
 }
 
 
@@ -285,15 +263,6 @@ float Boid::randomFloat(float _min, float _max)
 {
 	float r = (float)rand() / (float)RAND_MAX;
 	return _min + r * (_max - _min);
-}
-
-
-
-// Random Vector testing
-Vector3 Boid::ClampVector(Vector3& _vector)
-{
-	Vector3 newVector = Vector3((_vector.x * _vector.x) + (_vector.y * _vector.y) + (_vector.z * _vector.z));
-	return newVector;
 }
 
 
@@ -320,8 +289,8 @@ void Boid::checkPosition()
 	if (m_pos.y > zoneSize)
 	{
 		m_pos.y = -zoneSize;
-	}
-
+	}	
+	
 	// Check Z axis
 	if (m_pos.z < -zoneSize)
 	{

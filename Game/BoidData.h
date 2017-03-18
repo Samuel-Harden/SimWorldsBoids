@@ -4,8 +4,8 @@ class BoidData
 {
 public:
 
-	// Friend classes have acess to protected data
-	friend class BoidPrey;
+	// Friend classes have access to protected data
+	friend class Boid;
 	friend class BoidManager;
 
 	friend class Separation;

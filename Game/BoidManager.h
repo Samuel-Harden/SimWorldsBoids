@@ -13,7 +13,10 @@
 //#include "Model.h"
 
 class BoidData;
-class BoidPrey;
+class Boid;
+
+class Behaviour;
+
 struct GameData;
 struct DrawData;
 
@@ -52,7 +55,9 @@ private:
 
 	void updateBoids(GameData* _GD);
 
-	std::vector<BoidPrey*> preyboids;
+	std::vector<Boid*> m_boids;
+
+	std::vector<Behaviour*> m_behaviours;
 
 	// Vector to hold containers of faction Variables
 	std::vector<BoidData*> m_boidData;
@@ -62,7 +67,7 @@ private:
 	BoidData* boidDataGreen;
 	BoidData* boidDataPurple;
 
-	BoidPrey* boid;
+	Boid* boid;
 
 	int updateGroup;
 	int currentNoBoids;

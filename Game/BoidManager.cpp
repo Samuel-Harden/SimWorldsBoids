@@ -1,9 +1,16 @@
 #include "BoidManager.h"
 
-#include "BoidPrey.h"
+#include "Boid.h"
 #include "GameData.h"
 #include "DrawData.h"
 #include "BoidData.h"
+
+// Behaviours
+#include "Behaviour.h"
+#include "Alignment.h"
+#include "Avoidance.h"
+#include "Cohesion.h"
+#include "Separation.h"
 
 
 BoidManager::BoidManager(ID3D11Device* _pd3dDevice, const int& _maxBoids)
@@ -11,16 +18,16 @@ BoidManager::BoidManager(ID3D11Device* _pd3dDevice, const int& _maxBoids)
 	      updateGroup(0),
 	      activeBoids(0)
 {
-	preyboids.reserve(_maxBoids);
+	m_boids.reserve(_maxBoids);
 
 	int id = 0;
 	int faction = 0;
 
 	for (int i = 0; i < _maxBoids; i++)
 	{
-		boid = new BoidPrey(id, faction); // Pass in an int - Sets Boids ID
+		boid = new Boid(id, faction); // Pass in an int - Sets Boids ID
 		boid->init(_pd3dDevice);
-		preyboids.push_back(boid);
+		m_boids.push_back(boid);
 		currentNoBoids++;
 		id++;
 		faction++;
@@ -31,6 +38,21 @@ BoidManager::BoidManager(ID3D11Device* _pd3dDevice, const int& _maxBoids)
 			faction = 0;
 		}
 	}
+
+	// Create behaviours, store alphabetically
+	Alignment* m_align = new Alignment();
+	m_behaviours.push_back(m_align);
+
+	Avoidance* m_avoid = new Avoidance();
+	m_behaviours.push_back(m_avoid);
+
+	Cohesion* m_coh = new Cohesion();
+	m_behaviours.push_back(m_coh);
+
+	Separation* m_sep = new Separation();
+	m_behaviours.push_back(m_sep);
+
+
 
 	boidDataRed = new BoidData();
 	m_boidData.push_back(boidDataRed);
@@ -47,14 +69,14 @@ BoidManager::BoidManager(ID3D11Device* _pd3dDevice, const int& _maxBoids)
 BoidManager::~BoidManager()
 {
 	// Tidy away stuf here
-	for (std::vector<BoidPrey*>::iterator it = preyboids.begin();
-	it != preyboids.end(); it++)
+	for (std::vector<Boid*>::iterator it = m_boids.begin();
+	it != m_boids.end(); it++)
 	{
 		delete (*it);
 		(*it) = nullptr;
 	}
 
-	preyboids.clear();
+	m_boids.clear();
 
 	for (std::vector<BoidData*>::iterator it = m_boidData.begin();
 	it != m_boidData.end(); it++)
@@ -79,9 +101,9 @@ void BoidManager::Draw(DrawData* _DD)
 {
 	for (int i = 0; i < currentNoBoids; i++)
 	{
-		if (preyboids[i]->isActive == true)
+		if (m_boids[i]->isActive == true)
 		{
-			preyboids[i]->Draw(_DD);
+			m_boids[i]->Draw(_DD);
 		}
 	}
 }
@@ -94,9 +116,9 @@ void BoidManager::updateBoids(GameData* _GD)
 
 	for (int i = 0; i < currentNoBoids; i++)
 	{
-		if (preyboids[i]->isActive == true)
+		if (m_boids[i]->isActive == true)
 		{
-			preyboids[i]->run(preyboids, _GD, updateGroup, m_boidData[j]);
+			m_boids[i]->run(m_boids, _GD, updateGroup, m_boidData[j], m_behaviours);
 			j++;
 
 			if (j > 2)
@@ -108,7 +130,7 @@ void BoidManager::updateBoids(GameData* _GD)
 
 		updateGroup += 99;
 
-	if (updateGroup >= preyboids.size())
+	if (updateGroup >= m_boids.size())
 	{
 		updateGroup = 0;
 	}
@@ -121,11 +143,11 @@ void BoidManager::spawnBoid()
 	// Spawns one of each faction/colour
 	int boidsActivated = 0;
 
-	for (int i = 0; i < preyboids.size(); i++)
+	for (int i = 0; i < m_boids.size(); i++)
 	{
-		if (preyboids[i]->isActive == false)
+		if (m_boids[i]->isActive == false)
 		{
-			preyboids[i]->activateBoid();
+			m_boids[i]->activateBoid();
 			activeBoids++;
 			boidsActivated++;
 
@@ -142,11 +164,11 @@ void BoidManager::spawnBoid()
 
 void BoidManager::resetPreyBoids()
 {
-	for (int i = 0; i < preyboids.size(); i++)
+	for (int i = 0; i < m_boids.size(); i++)
 	{
-		if (preyboids[i]->isActive == true)
+		if (m_boids[i]->isActive == true)
 		{
-			preyboids[i]->deactivateBoid();
+			m_boids[i]->deactivateBoid();
 		}
 	}
 }

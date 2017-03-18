@@ -1,6 +1,6 @@
 #include "Alignment.h"
 
-#include"BoidPrey.h"
+#include"Boid.h"
 #include "BoidData.h"
 
 
@@ -21,7 +21,7 @@ Alignment::~Alignment()
 
 // Alignment
 // For every nearby boid in the system, calculate the average velocity
-Vector3 Alignment::align(BoidPrey* _boid, BoidData* _BD, std::vector<BoidPrey*>& _boids)
+Vector3 Alignment::calculateBehaviour(Boid* _boid, BoidData* _BD, std::vector<Boid*>& _boids)
 {
 	// The position the boid wants to be
 	Vector3 sum = Vector3::Zero;

@@ -1,51 +1,69 @@
 #pragma once
-#include "CMOGO.h"
 
-class Boid : public CMOGO
+#include "VBGO.h"
+#include "vertex.h"
+#include <vector>
+
+class BoidData;
+class Behaviour;
+
+
+
+class Boid : public VBGO
 {
 public:
-	Boid(string _fileName, ID3D11Device* _pd3dDevice, IEffectFactory* _EF);
-	~Boid();
+	Boid(int& _ID, int& _faction);
+	virtual ~Boid();
 
+	//initialise the Veretx and Index buffers for the cube
+	void init(ID3D11Device* _GD);
 
-	virtual void Tick(GameData* _GD) override;
-	void run(std::vector<Boid*>& boids, GameData* _GD);
+	void Tick(GameData* _GD, BoidData* _BD);
+	void run(std::vector<Boid*>& boids, GameData* _GD, int _boidGroup, BoidData* _boidData, std::vector<Behaviour*> _behaviours);
 
-	Vector3 getVelocity();
+	Vector3 getVelocity() const;
 
 	bool isActive;
 	void activateBoid();
+	void deactivateBoid();
+
+	int getFaction();
 
 protected:
+	//this is to allow custom versions of this which create the basic cube and then distort it
+	//see VBSpiral, VBSpiked and VBPillow
+	virtual void Transform() {};
+
+	int m_size;
+	myVertex* m_vertices;
 
 private:
-	void flock(std::vector<Boid*>& _boids);
+
+	void flock(std::vector<Boid*>& _boids, GameData* _GD, BoidData*& _boidData,
+		std::vector<Behaviour*> _behaviours);
+
 	void applyForce(Vector3& force);
-	float randomFloat(float _min, float _max);
+
+	void setFactionColour();
 
 	void checkPosition();
+	void setRandPos();
 
-	Vector3 position;
+	// Helper Function
+	float randomFloat(float _min, float _max);
+
+	bool newPos;
+
 	Vector3 velocity;
 	Vector3 acceleration;
 
-	float maxForce;
-	float maxSpeed;
+	int boidID;
+	int faction;
 
-	int zoneSize;
+	float boidRed;	  // Red colour Value for Vertices
+	float boidBlue;	  // Blue colour Value for Vertices
+	float boidGreen;  // Green colour Value for Vertices
 
-	float neighbourDistance;
-	float desiredSeperation;
-
-	// Behaviours
-	Vector3 seek(Vector3& target);
-	Vector3 seperate(std::vector<Boid*>& _boids);
-	Vector3 align(std::vector<Boid*>& _boids);
-	Vector3 cohesion(std::vector<Boid*>& _boids);
-
-	Matrix m_viewMat;
-	Vector3 m_dir;
-	Vector3 direction;
-
-	Vector3 ClampVector(Vector3& _vector);
+	// Constants
+	const int zoneSize = 200;
 };

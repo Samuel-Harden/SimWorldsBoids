@@ -1,26 +1,21 @@
 #pragma once
 
-#include <vector>
-#include <d3d11.h>
-#include "SimpleMath.h"
+#include "Behaviour.h"
 
-//using namespace DirectX;
-using namespace DirectX::SimpleMath;
-
-class BoidPrey;
-class BoidData;
-
-class Cohesion
+class Cohesion : public Behaviour
 {
 public:
-	friend class BoidPrey;
 
-	Cohesion();
+	friend class BoidManager;
+	friend class Boid;
+
 	~Cohesion();
 
 protected:
-	Vector3 cohesion(BoidPrey* _boid, BoidData* _BD, std::vector<BoidPrey*>& _boids);
-	Vector3 seek(Vector3& target, BoidPrey* _boid, BoidData* _BD);
+	Cohesion();
+
+	DirectX::SimpleMath::Vector3 calculateBehaviour(Boid* _boid, BoidData* _BD, std::vector<Boid*>& _boids) override;
+	DirectX::SimpleMath::Vector3 seek(DirectX::SimpleMath::Vector3& target, Boid* _boid, BoidData* _BD);
 
 private:
 

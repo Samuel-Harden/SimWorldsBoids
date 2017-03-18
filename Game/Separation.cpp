@@ -1,6 +1,6 @@
 #include "Separation.h"
 
-#include"BoidPrey.h"
+#include"Boid.h"
 #include "BoidData.h"
 
 
@@ -21,7 +21,7 @@ Separation::~Separation()
 
 // Seperation
 // Method checks for nearby boids and steers away
-Vector3 Separation::separate(BoidPrey* _boid, BoidData* _BD, std::vector<BoidPrey*>& _boids)
+Vector3 Separation::calculateBehaviour(Boid* _boid, BoidData* _BD, std::vector<Boid*>& _boids)
 {
 	Vector3 steer = Vector3::Zero;
 	int count = 0;

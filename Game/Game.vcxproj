@@ -127,7 +127,7 @@
   <ItemGroup>
     <ClInclude Include="Alignment.h" />
     <ClInclude Include="Avoidance.h" />
-    <ClInclude Include="Boid.h" />
+    <ClInclude Include="Behaviour.h" />
     <ClInclude Include="BoidData.h" />
     <ClInclude Include="BoidManager.h" />
     <ClInclude Include="camera.h" />
@@ -153,7 +153,7 @@
     <ClInclude Include="Separation.h" />
     <ClInclude Include="TextGO2D.h" />
     <ClInclude Include="TPSCamera.h" />
-    <ClInclude Include="BoidPrey.h" />
+    <ClInclude Include="Boid.h" />
     <ClInclude Include="VBCube.h" />
     <ClInclude Include="VBGO.h" />
     <ClInclude Include="VBPillow.h" />
@@ -165,7 +165,7 @@
   <ItemGroup>
     <ClCompile Include="Alignment.cpp" />
     <ClCompile Include="Avoidance.cpp" />
-    <ClCompile Include="Boid.cpp" />
+    <ClCompile Include="Behaviour.cpp" />
     <ClCompile Include="BoidData.cpp" />
     <ClCompile Include="BoidManager.cpp" />
     <ClCompile Include="camera.cpp" />
@@ -185,7 +185,7 @@
     <ClCompile Include="Separation.cpp" />
     <ClCompile Include="TextGO2D.cpp" />
     <ClCompile Include="TPSCamera.cpp" />
-    <ClCompile Include="BoidPrey.cpp" />
+    <ClCompile Include="Boid.cpp" />
     <ClCompile Include="VBCube.cpp" />
     <ClCompile Include="VBGO.cpp" />
     <ClCompile Include="VBSnail.cpp" />

@@ -1,25 +1,20 @@
 #pragma once
 
-#include <vector>
-#include <d3d11.h>
-#include "SimpleMath.h"
+#include "Behaviour.h"
 
-//using namespace DirectX;
-using namespace DirectX::SimpleMath;
-
-class BoidPrey;
-class BoidData;
-
-class Alignment
+class Alignment : public Behaviour
 {
 public:
-	friend class BoidPrey;
 
-	Alignment();
+	friend class BoidManager;
+	friend class Boid;
+
 	~Alignment();
 
 protected:
-	Vector3 align(BoidPrey* _boid, BoidData* _BD, std::vector<BoidPrey*>& _boids);
+	Alignment();
+
+	DirectX::SimpleMath::Vector3 calculateBehaviour(Boid* _boid, BoidData* _BD, std::vector<Boid*>& _boids) override;
 
 private:
 

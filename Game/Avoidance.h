@@ -1,27 +1,21 @@
 #pragma once
 
-#include <vector>
-#include <d3d11.h>
-#include "SimpleMath.h"
+#include "Behaviour.h"
 
-//using namespace DirectX;
-using namespace DirectX::SimpleMath;
-
-class BoidPrey;
-class BoidData;
-class GameData;
-
-class Avoidance
+class Avoidance : public Behaviour
 {
 public:
-	friend class BoidPrey;
 
-	Avoidance();
+	friend class BoidManager;
+	friend class Boid;
+
 	~Avoidance();
 
 protected:
-	Vector3 avoid(BoidPrey* _boid, BoidData* _BD, std::vector<BoidPrey*>& _boids);
-	Vector3 avoidPlayer(BoidPrey* _boid, BoidData* _BD, GameData* _GD);
+	Avoidance();
+
+	DirectX::SimpleMath::Vector3 calculateBehaviour(Boid* _boid, BoidData* _BD, std::vector<Boid*>& _boids) override;
+	//DirectX::SimpleMath::Vector3 avoidPlayer(Boid* _boid, BoidData* _BD, GameData* _GD) override;
 
 private:
 
