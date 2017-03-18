@@ -334,11 +334,9 @@ void Game::setTweakBar(ID3D11Device* _pd3dDevice)
 	int myBarSize[2] = { 340, 510 };
 	TwSetParam(boidVariables, NULL, "size", TW_PARAM_INT32, 2, myBarSize);
 
-
 	// AntTweakBar Buttons /////////////////////////////////////////////////////
 
 	TwAddButton(boidVariables, "comment1", NULL, NULL, " label='Red Faction: ' ");
-
 
 	// RED FACTION VARIABLES
 	TwAddVarRW(boidVariables, "Red   - BoidSpeed: ", TW_TYPE_FLOAT,
@@ -392,7 +390,7 @@ void Game::setTweakBar(ID3D11Device* _pd3dDevice)
 	TwAddVarRW(boidVariables, "Green - Fight/Flight - (Weight): ", TW_TYPE_FLOAT,
 		&m_boidManager->getFlightFightWeight(1), "min=-50.0 max=50.0 step=0.1");
 
-	TwAddVarRW(boidVariables, "Green   - Avoid Player - (Weight): ", TW_TYPE_FLOAT,
+	TwAddVarRW(boidVariables, "Green - Avoid Player - (Weight): ", TW_TYPE_FLOAT,
 		&m_boidManager->getRunWeight(1), "min=-50.0 max=50.0 step=0.1");
 
 	TwAddSeparator(boidVariables, "sep2", NULL);
