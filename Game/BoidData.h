@@ -1,5 +1,8 @@
 #pragma once
 
+#include <d3d11.h>
+#include "SimpleMath.h"
+
 class BoidData
 {
 public:
@@ -30,6 +33,8 @@ protected:
 	float boidMaxForce;
 	float neighbourDist;
 	float desiredSep;
+
+	DirectX::SimpleMath::Vector3 predatorPos;
 
 private:
 

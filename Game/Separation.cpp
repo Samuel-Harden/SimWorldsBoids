@@ -21,7 +21,7 @@ Separation::~Separation()
 
 // Seperation
 // Method checks for nearby boids and steers away
-Vector3 Separation::calculateBehaviour(Boid* _boid, BoidData* _BD, std::vector<Boid*>& _boids)
+Vector3 Separation::calculateBehaviour1(Boid* _boid, BoidData* _BD, std::vector<Boid*>& _boids)
 {
 	Vector3 steer = Vector3::Zero;
 	int count = 0;

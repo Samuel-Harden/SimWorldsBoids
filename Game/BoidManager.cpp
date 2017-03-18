@@ -39,29 +39,8 @@ BoidManager::BoidManager(ID3D11Device* _pd3dDevice, const int& _maxBoids)
 		}
 	}
 
-	// Create behaviours, store alphabetically
-	Alignment* m_align = new Alignment();
-	m_behaviours.push_back(m_align);
-
-	Avoidance* m_avoid = new Avoidance();
-	m_behaviours.push_back(m_avoid);
-
-	Cohesion* m_coh = new Cohesion();
-	m_behaviours.push_back(m_coh);
-
-	Separation* m_sep = new Separation();
-	m_behaviours.push_back(m_sep);
-
-
-
-	boidDataRed = new BoidData();
-	m_boidData.push_back(boidDataRed);
-
-	boidDataGreen = new BoidData();
-	m_boidData.push_back(boidDataGreen);
-
-	boidDataPurple = new BoidData();
-	m_boidData.push_back(boidDataPurple);
+	createBehaviours();
+	createBoidData();
 }
 
 
@@ -92,6 +71,13 @@ BoidManager::~BoidManager()
 
 void BoidManager::Tick(GameData* _GD)
 {
+	// Update BoidData's Pred Position to that of GameData's pos (Player pos)
+	for (std::vector<BoidData*>::iterator it = m_boidData.begin();
+	it != m_boidData.end(); it++)
+	{
+		(*it)->predatorPos = _GD->predatorPos;
+	}
+
 	updateBoids(_GD);
 }
 
@@ -171,6 +157,38 @@ void BoidManager::resetPreyBoids()
 			m_boids[i]->deactivateBoid();
 		}
 	}
+}
+
+
+
+void BoidManager::createBehaviours()
+{
+	// Create behaviours, store alphabetically
+	Alignment* m_align = new Alignment();
+	m_behaviours.push_back(m_align);
+
+	Avoidance* m_avoid = new Avoidance();
+	m_behaviours.push_back(m_avoid);
+
+	Cohesion* m_coh = new Cohesion();
+	m_behaviours.push_back(m_coh);
+
+	Separation* m_sep = new Separation();
+	m_behaviours.push_back(m_sep);
+}
+
+
+void BoidManager::createBoidData()
+{
+	// Each faction has its own boid data...
+	boidDataRed = new BoidData();
+	m_boidData.push_back(boidDataRed);
+
+	boidDataGreen = new BoidData();
+	m_boidData.push_back(boidDataGreen);
+
+	boidDataPurple = new BoidData();
+	m_boidData.push_back(boidDataPurple);
 }
 
 

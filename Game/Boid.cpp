@@ -177,12 +177,11 @@ void Boid::run(std::vector<Boid*>& _boids, GameData* _GD,
 void Boid::flock(std::vector<Boid*>& _boids, GameData* _GD,
 	BoidData*& _boidData, std::vector<Behaviour*> _behaviours)
 {
-	Vector3 ali   = _behaviours[0]->calculateBehaviour(this, _boidData, _boids);    // Alignment
-	Vector3 avoid = _behaviours[1]->calculateBehaviour(this, _boidData, _boids);    // Avoidance
-	Vector3 coh   = _behaviours[2]->calculateBehaviour(this, _boidData, _boids);    // Cohesion
-	Vector3 sep   = _behaviours[3]->calculateBehaviour(this, _boidData, _boids);    // Seperation
-
-	//Vector3 pred = m_avoidance->avoidPlayer(this, _boidData, _GD);
+	Vector3 ali   = _behaviours[0]->calculateBehaviour1(this, _boidData, _boids);    // Alignment
+	Vector3 avoid = _behaviours[1]->calculateBehaviour1(this, _boidData, _boids);    // Avoidance
+	Vector3 pred  = _behaviours[1]->calculateBehaviour2(this, _boidData);
+	Vector3 coh   = _behaviours[2]->calculateBehaviour1(this, _boidData, _boids);    // Cohesion
+	Vector3 sep   = _behaviours[3]->calculateBehaviour1(this, _boidData, _boids);    // Seperation
 
 
 	//groupColor(_boids);              // Function not currently working...
@@ -193,13 +192,13 @@ void Boid::flock(std::vector<Boid*>& _boids, GameData* _GD,
 	ali *= _boidData->aliWeight;
 	coh *= _boidData->cohWeight;
 
-	//pred *= _boidData->runWeight;
+	pred *= _boidData->runWeight;
 
 	applyForce(sep);
 	applyForce(ali);
 	applyForce(coh);
 	applyForce(avoid);
-	//applyForce(pred);
+	applyForce(pred);
 }
 
 

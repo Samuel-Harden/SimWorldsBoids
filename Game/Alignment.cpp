@@ -21,7 +21,7 @@ Alignment::~Alignment()
 
 // Alignment
 // For every nearby boid in the system, calculate the average velocity
-Vector3 Alignment::calculateBehaviour(Boid* _boid, BoidData* _BD, std::vector<Boid*>& _boids)
+Vector3 Alignment::calculateBehaviour1(Boid* _boid, BoidData* _BD, std::vector<Boid*>& _boids)
 {
 	// The position the boid wants to be
 	Vector3 sum = Vector3::Zero;

@@ -18,7 +18,9 @@ public:
 
 protected:
 	Behaviour();
-	virtual DirectX::SimpleMath::Vector3 calculateBehaviour(Boid* _boid, BoidData* _BD, std::vector<Boid*>& _boids);
+	virtual DirectX::SimpleMath::Vector3 calculateBehaviour1(Boid* _boid, BoidData* _BD, std::vector<Boid*>& _boids);
+
+	virtual DirectX::SimpleMath::Vector3 calculateBehaviour2(Boid* _boid, BoidData* _BD);
 
 private:
 

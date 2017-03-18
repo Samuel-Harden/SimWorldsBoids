@@ -53,6 +53,9 @@ protected:
 
 private:
 
+	void createBehaviours();
+	void createBoidData();
+
 	void updateBoids(GameData* _GD);
 
 	std::vector<Boid*> m_boids;

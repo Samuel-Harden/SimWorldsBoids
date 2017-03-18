@@ -21,7 +21,7 @@ Cohesion::~Cohesion()
 // Cohesion
 // For the average position (I.E. center) of all nearby boids,
 // calculate towards that position
-Vector3 Cohesion::calculateBehaviour(Boid* _boid, BoidData* _BD, std::vector<Boid*>& _boids)
+Vector3 Cohesion::calculateBehaviour1(Boid* _boid, BoidData* _BD, std::vector<Boid*>& _boids)
 {
 	Vector3 sum = Vector3::Zero; // start with an empty vector to accumulate all positions
 	int count = 0;

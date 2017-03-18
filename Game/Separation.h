@@ -14,7 +14,7 @@ public:
 protected:
 	Separation();
 
-	DirectX::SimpleMath::Vector3 calculateBehaviour(Boid* _boid, BoidData* _BD, std::vector<Boid*>& _boids) override;
+	DirectX::SimpleMath::Vector3 calculateBehaviour1(Boid* _boid, BoidData* _BD, std::vector<Boid*>& _boids) override;
 
 private:
 

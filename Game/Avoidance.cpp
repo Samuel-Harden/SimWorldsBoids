@@ -2,7 +2,6 @@
 
 #include"Boid.h"
 #include "BoidData.h"
-#include "GameData.h"
 
 
 
@@ -22,18 +21,18 @@ Avoidance::~Avoidance()
 
 // Avoid
 // Method checks for nearby predator and steers away
-/*Vector3 Avoidance::avoidPlayer(Boid* _boid, BoidData* _BD, GameData* _GD)
+Vector3 Avoidance::calculateBehaviour2(Boid* _boid, BoidData* _BD)
 {
 	Vector3 steer = Vector3::Zero;
 	int count = 0;
 
-	float d = Vector3::Distance(_boid->getPos(), _GD->predatorPos);
+	float d = Vector3::Distance(_boid->getPos(), _BD->predatorPos);
 
 	// if Boid is a neighbour
 	if (d > 0 && d < _BD->neighbourDist)
 	{
 		// Calculate vector pointing away from neighbour
-		Vector3 diff = (_boid->getPos() - (_GD->predatorPos));
+		Vector3 diff = (_boid->getPos() - (_BD->predatorPos));
 		diff = XMVector3Normalize(diff);
 		diff = (diff / d); // Weight by distance
 		steer = (steer + diff);
@@ -52,11 +51,11 @@ Avoidance::~Avoidance()
 		steer = XMVector3ClampLength(steer, 0.0f, _BD->boidMaxSpeed);
 	}
 	return steer;
-}*/
+}
 
 
 
-Vector3 Avoidance::calculateBehaviour(Boid* _boid, BoidData* _BD, std::vector<Boid*>& _boids)
+Vector3 Avoidance::calculateBehaviour1(Boid* _boid, BoidData* _BD, std::vector<Boid*>& _boids)
 {
 	Vector3 steer = Vector3::Zero;
 	int count = 0;
