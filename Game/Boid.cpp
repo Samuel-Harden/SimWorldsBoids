@@ -2,9 +2,9 @@
 
 #include "GameData.h"
 #include "BoidData.h"
-
 #include "Behaviour.h"
 
+#include "PositionCheck.h"
 
 Boid::Boid(int& _ID, int& _faction)
 	             : boidID (_ID),
@@ -82,9 +82,6 @@ void Boid::init(ID3D11Device* GD)
 	m_vertices[vert].Color = Color(boidRed, boidGreen, boidBlue, 1.0f);
 	m_vertices[vert++].Pos = Vector3(5.0f, 0.0f, 0.0f);
 
-	//carry out some kind of transform on these vertices to make this object more interesting
-	Transform();
-
 	//calculate the normals for the basic lighting in the base shader
 	for (int i = 0; i<m_numPrims; i++)
 	{
@@ -103,7 +100,6 @@ void Boid::init(ID3D11Device* GD)
 		m_vertices[V2].Norm = norm;
 		m_vertices[V3].Norm = norm;
 	}
-
 
 	BuildIB(GD, indices);
 	BuildVB(GD, numVerts, m_vertices);
@@ -159,7 +155,7 @@ void Boid::deactivateBoid()
 
 
 void Boid::run(std::vector<Boid*>& _boids, GameData* _GD,
-	int _boidGroup, BoidData* _boidData, std::vector<Behaviour*> _behaviours)
+	int _boidGroup, BoidData* _boidData, std::vector<Behaviour*> _behaviours, PositionCheck*& _posCheck)
 {
 	// If this boid, is in the current group to be updated, update behaviours...
 	if (boidID >= _boidGroup && boidID <= (_boidGroup + 100))
@@ -169,7 +165,10 @@ void Boid::run(std::vector<Boid*>& _boids, GameData* _GD,
 
 	Tick(_GD, _boidData);
 
-	checkPosition();
+	// Check Bounds...
+	_posCheck->checkPos(m_pos.x);
+	_posCheck->checkPos(m_pos.y);
+	_posCheck->checkPos(m_pos.z);
 }
 
 
@@ -179,7 +178,7 @@ void Boid::flock(std::vector<Boid*>& _boids, GameData* _GD,
 {
 	Vector3 ali   = _behaviours[0]->calculateBehaviour1(this, _boidData, _boids);    // Alignment
 	Vector3 avoid = _behaviours[1]->calculateBehaviour1(this, _boidData, _boids);    // Avoidance
-	Vector3 pred  = _behaviours[1]->calculateBehaviour2(this, _boidData);
+	Vector3 pred  = _behaviours[1]->calculateBehaviour2(this, _boidData);            // Avoid Player
 	Vector3 coh   = _behaviours[2]->calculateBehaviour1(this, _boidData, _boids);    // Cohesion
 	Vector3 sep   = _behaviours[3]->calculateBehaviour1(this, _boidData, _boids);    // Seperation
 
@@ -236,7 +235,7 @@ Vector3 Boid::getVelocity() const
 
 
 
-int Boid::getFaction()
+int Boid::getFaction() const
 {
 	return faction;
 }
@@ -259,42 +258,4 @@ float Boid::randomFloat(float _min, float _max)
 {
 	float r = (float)rand() / (float)RAND_MAX;
 	return _min + r * (_max - _min);
-}
-
-
-
-void Boid::checkPosition()
-{
-	// Check X axis
-	if (m_pos.x < -zoneSize)
-	{
-		m_pos.x = zoneSize;
-	}
-
-	if (m_pos.x > zoneSize)
-	{
-		m_pos.x = -zoneSize;
-	}
-
-	// Check Y axis
-	if (m_pos.y < -zoneSize)
-	{
-		m_pos.y = zoneSize;
-	}
-
-	if (m_pos.y > zoneSize)
-	{
-		m_pos.y = -zoneSize;
-	}	
-	
-	// Check Z axis
-	if (m_pos.z < -zoneSize)
-	{
-		m_pos.z = zoneSize;
-	}
-
-	if (m_pos.z > zoneSize)
-	{
-		m_pos.z = -zoneSize;
-	}
 }

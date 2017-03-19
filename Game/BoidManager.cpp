@@ -5,6 +5,8 @@
 #include "DrawData.h"
 #include "BoidData.h"
 
+#include "PositionCheck.h"
+
 // Behaviours
 #include "Behaviour.h"
 #include "Alignment.h"
@@ -19,6 +21,8 @@ BoidManager::BoidManager(ID3D11Device* _pd3dDevice, const int& _maxBoids)
 	      activeBoids(0)
 {
 	m_boids.reserve(_maxBoids);
+
+	m_posCheck = new PositionCheck();
 
 	createBoids(_pd3dDevice, _maxBoids);
 	createBehaviours();
@@ -86,10 +90,10 @@ void BoidManager::updateBoids(GameData* _GD)
 	{
 		if (m_boids[i]->isActive == true)
 		{
-			m_boids[i]->run(m_boids, _GD, updateGroup, m_boidData[j], m_behaviours);
+			m_boids[i]->run(m_boids, _GD, updateGroup, m_boidData[j], m_behaviours, m_posCheck);
 			j++;
 
-			if (j > 1)
+			if (j > 2)
 			{
 				j = 0;
 			}
@@ -120,7 +124,7 @@ void BoidManager::spawnBoid()
 			boidsActivated++;
 
 			// once two boids (one of each faction) has spawned, return
-			if (boidsActivated == 2)
+			if (boidsActivated == 3)
 			{
 				return;
 			}
@@ -157,7 +161,7 @@ void BoidManager::createBoids(ID3D11Device* _pd3dDevice, const int& _maxBoids)
 		faction++;
 
 		// reset faction
-		if (faction > 1)
+		if (faction > 2)
 		{
 			faction = 0;
 		}
@@ -191,6 +195,9 @@ void BoidManager::createBoidData()
 
 	boidDataGreen = new BoidData();
 	m_boidData.push_back(boidDataGreen);
+
+	boidDataPurple = new BoidData();
+	m_boidData.push_back(boidDataPurple);
 }
 
 

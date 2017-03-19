@@ -6,6 +6,7 @@
 
 class BoidData;
 class Behaviour;
+class PositionCheck;
 
 
 
@@ -19,39 +20,35 @@ public:
 	void init(ID3D11Device* _GD);
 
 	void Tick(GameData* _GD, BoidData* _BD);
-	void run(std::vector<Boid*>& boids, GameData* _GD, int _boidGroup, BoidData* _boidData, std::vector<Behaviour*> _behaviours);
+	void run(std::vector<Boid*>& boids, GameData* _GD, int _boidGroup, BoidData* _boidData, std::vector<Behaviour*> _behaviours, PositionCheck*& _posCheck);
 
 	Vector3 getVelocity() const;
+	int getFaction() const;
 
 	bool isActive;
 	void activateBoid();
 	void deactivateBoid();
 
-	int getFaction();
-
 protected:
-	//this is to allow custom versions of this which create the basic cube and then distort it
-	//see VBSpiral, VBSpiked and VBPillow
-	virtual void Transform() {};
 
 	int m_size;
 	myVertex* m_vertices;
 
 private:
 
+	// Functions
 	void flock(std::vector<Boid*>& _boids, GameData* _GD, BoidData*& _boidData,
 		std::vector<Behaviour*> _behaviours);
 
 	void applyForce(Vector3& force);
 
 	void setFactionColour();
-
-	void checkPosition();
 	void setRandPos();
 
 	// Helper Function
 	float randomFloat(float _min, float _max);
 
+	// Variables
 	bool newPos;
 
 	Vector3 velocity;

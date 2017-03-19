@@ -57,7 +57,6 @@ protected:
 	Light* m_light; //base light
 
 	list<GameObject *> m_GameObjects; //data structure storing all GameObjects of this Game
-	list<GameObject2D *> m_GameObject2Ds;//ditto 2D objects
 
 	std::unique_ptr<BoidManager> m_boidManager;
 	std::unique_ptr<InputHandler> m_inputHandler;

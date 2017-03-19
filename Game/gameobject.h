@@ -19,6 +19,7 @@ struct DrawData;
 class GameObject
 {
 public:
+
 	GameObject();
 	virtual ~GameObject();
 

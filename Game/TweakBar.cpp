@@ -13,7 +13,7 @@ TweakBar::TweakBar(ID3D11Device* _pd3dDevice,
 	TwWindowSize(_screenWidth, _screenHeight);
 
 	boidVariables = TwNewBar("Boid Parameters:");
-	int myBarSize[2] = { 325, 355 };
+	int myBarSize[2] = { 325, 510 };
 	TwSetParam(boidVariables, NULL, "size", TW_PARAM_INT32, 2, myBarSize);
 
 	// AntTweakBar Buttons /////////////////////////////////////////////////////
@@ -78,14 +78,48 @@ TweakBar::TweakBar(ID3D11Device* _pd3dDevice,
 	//TwAddVarRW(boidVariables, "Green - Fight/Flight F2 - (Weight): ", TW_TYPE_FLOAT,
 	//	&m_boidManager->getFlightFightWeight2(1), "min=-50.0 max=50.0 step=0.1");
 
-	TwAddVarRW(boidVariables, "Green - Avoid Player - (Weight): ", TW_TYPE_FLOAT,
+	TwAddVarRW(boidVariables, "Green   - Avoid Player - (Weight): ", TW_TYPE_FLOAT,
 		&_boidManager->getRunWeight(1), "min=-50.0 max=50.0 step=0.1");
 
 	TwAddSeparator(boidVariables, "sep2", NULL);
-	TwDefine(" barName/sep2 group='sep' ");
+	TwDefine(" barName/sep2 group='Parameters2' ");
+
+	TwAddButton(boidVariables, "comment3", NULL, NULL, " label='Purple Faction: ' ");
+
+	//Purple FACTION VARIABLES
+	TwAddVarRW(boidVariables, "Purple   - BoidSpeed: ", TW_TYPE_FLOAT,
+		&_boidManager->getBoidSpeed(2), "min=0.1 max=1.0 step=0.1");
+
+	TwAddVarRW(boidVariables, "Purple   - View Distance: ", TW_TYPE_FLOAT,
+		&_boidManager->getNeighbourDist(2), "min=0.0 max=500.0 step=1.0");
+
+	TwAddVarRW(boidVariables, "Purple   - Desired Seperation: ", TW_TYPE_FLOAT,
+		&_boidManager->getDesiredSeperation(2), "min=0.0 max=10.0 step=0.1");
+
+	TwAddVarRW(boidVariables, "Purple   - Separation - (Weight): ", TW_TYPE_FLOAT,
+		&_boidManager->getSepWeight(2), "min=-50.0 max=50.0 step=0.1");
+
+	TwAddVarRW(boidVariables, "Purple   - Alignment - (Weight): ", TW_TYPE_FLOAT,
+		&_boidManager->getAliWeight(2), "min=-50.0 max=50.0 step=0.1");
+
+	TwAddVarRW(boidVariables, "Purple   - Cohesion - (Weight): ", TW_TYPE_FLOAT,
+		&_boidManager->getCohWeight(2), "min=-50.0 max=50.0 step=0.1");
+
+	TwAddVarRW(boidVariables, "Purple   - Fight/Flight - (Weight): ", TW_TYPE_FLOAT,
+		&_boidManager->getFlightFightWeight(2), "min=-50.0 max=50.0 step=0.1");
+
+	//TwAddVarRW(boidVariables, "Purple   - Fight/Flight F2 - (Weight): ", TW_TYPE_FLOAT,
+	//	&m_boidManager->getFlightFightWeight2(2), "min=-50.0 max=50.0 step=0.1");
+
+	TwAddVarRW(boidVariables, "Purple   - Avoid Player - (Weight): ", TW_TYPE_FLOAT,
+		&_boidManager->getRunWeight(2), "min=-50.0 max=50.0 step=0.1");
+
+	TwAddSeparator(boidVariables, "sep3", NULL);
+	TwDefine(" barName/sep3 group='Parameters3' ");
 
 	TwAddVarRO(boidVariables, "Total no Boids: ", TW_TYPE_INT32,
 		&_boidManager->activeBoids, nullptr);
+
 
 	// End AntTweakBar Stuff ///////////////////////////////////////////////////
 }

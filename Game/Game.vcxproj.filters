@@ -43,16 +43,28 @@
     <Filter Include="Objects\2D\Source">
       <UniqueIdentifier>{01e73c6e-7bcd-454a-8185-915670785862}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Objects\Source\Boids">
-      <UniqueIdentifier>{9f0b781b-0246-47e6-8542-b89354707094}</UniqueIdentifier>
+    <Filter Include="Base\Headers\States">
+      <UniqueIdentifier>{8e4fd2a3-878b-4219-9882-5a09291b5603}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Objects\Headers\Boids">
+    <Filter Include="Base\Source\States">
+      <UniqueIdentifier>{53ad8e05-9edf-48e2-beb6-f104fbf9ac47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\Headers\Data">
+      <UniqueIdentifier>{81fab988-3e1e-4c29-bc39-015138c3d8dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\Headers\Boids">
+      <UniqueIdentifier>{5584ab5e-4916-4966-83e2-a4268b2678c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\Source\Boids">
+      <UniqueIdentifier>{10224fbb-ebbc-4629-abf2-dcee9df2bab6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Boids">
       <UniqueIdentifier>{0e4be18f-c099-478e-957f-bde1983b0d5e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Base\Headers\Behaviours">
+    <Filter Include="Base\Headers\Boids\Behaviours">
       <UniqueIdentifier>{bd4550ce-5819-41e1-9fc3-c8280a0c1324}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Base\Source\Behaviours">
+    <Filter Include="Base\Source\Boids\Behaviours">
       <UniqueIdentifier>{79d86aaf-7938-4a1c-b750-19f9db90ebfe}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -71,18 +83,6 @@
     </ClInclude>
     <ClInclude Include="ObjectList.h">
       <Filter>Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="GameData.h">
-      <Filter>Base\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="GameState.h">
-      <Filter>Base\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="DrawData2D.h">
-      <Filter>Base\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="DrawData.h">
-      <Filter>Base\Headers</Filter>
     </ClInclude>
     <ClInclude Include="VBGO.h">
       <Filter>Objects\Headers</Filter>
@@ -135,38 +135,53 @@
     <ClInclude Include="VBCube.h">
       <Filter>Objects\Example VBGOs\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="BoidManager.h">
-      <Filter>Base\Headers</Filter>
-    </ClInclude>
     <ClInclude Include="FreeCamera.h">
       <Filter>Objects\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="BoidData.h">
-      <Filter>Base\Headers</Filter>
     </ClInclude>
     <ClInclude Include="InputHandler.h">
       <Filter>Base\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Cohesion.h">
-      <Filter>Base\Headers\Behaviours</Filter>
+      <Filter>Base\Headers\Boids\Behaviours</Filter>
     </ClInclude>
     <ClInclude Include="Alignment.h">
-      <Filter>Base\Headers\Behaviours</Filter>
+      <Filter>Base\Headers\Boids\Behaviours</Filter>
     </ClInclude>
     <ClInclude Include="Separation.h">
-      <Filter>Base\Headers\Behaviours</Filter>
+      <Filter>Base\Headers\Boids\Behaviours</Filter>
     </ClInclude>
     <ClInclude Include="Avoidance.h">
-      <Filter>Base\Headers\Behaviours</Filter>
+      <Filter>Base\Headers\Boids\Behaviours</Filter>
     </ClInclude>
     <ClInclude Include="Boid.h">
-      <Filter>Objects\Headers\Boids</Filter>
+      <Filter>Objects\Boids</Filter>
     </ClInclude>
     <ClInclude Include="Behaviour.h">
-      <Filter>Base\Headers\Behaviours</Filter>
+      <Filter>Base\Headers\Boids\Behaviours</Filter>
     </ClInclude>
     <ClInclude Include="TweakBar.h">
       <Filter>Base\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStateEnum.h">
+      <Filter>Base\Headers\States</Filter>
+    </ClInclude>
+    <ClInclude Include="GameData.h">
+      <Filter>Base\Headers\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawData2D.h">
+      <Filter>Base\Headers\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawData.h">
+      <Filter>Base\Headers\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="BoidManager.h">
+      <Filter>Base\Headers\Boids</Filter>
+    </ClInclude>
+    <ClInclude Include="BoidData.h">
+      <Filter>Base\Headers\Boids</Filter>
+    </ClInclude>
+    <ClInclude Include="PositionCheck.h">
+      <Filter>Base\Headers\Boids</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -215,41 +230,44 @@
     <ClCompile Include="TextGO2D.cpp">
       <Filter>Objects\2D\Source</Filter>
     </ClCompile>
-    <ClCompile Include="BoidManager.cpp">
-      <Filter>Base\Source</Filter>
-    </ClCompile>
     <ClCompile Include="FreeCamera.cpp">
       <Filter>Objects\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="GameState.cpp">
-      <Filter>Base\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="BoidData.cpp">
-      <Filter>Base\Source</Filter>
     </ClCompile>
     <ClCompile Include="InputHandler.cpp">
       <Filter>Base\Source</Filter>
     </ClCompile>
     <ClCompile Include="Cohesion.cpp">
-      <Filter>Base\Source\Behaviours</Filter>
+      <Filter>Base\Source\Boids\Behaviours</Filter>
     </ClCompile>
     <ClCompile Include="Alignment.cpp">
-      <Filter>Base\Source\Behaviours</Filter>
+      <Filter>Base\Source\Boids\Behaviours</Filter>
     </ClCompile>
     <ClCompile Include="Separation.cpp">
-      <Filter>Base\Source\Behaviours</Filter>
+      <Filter>Base\Source\Boids\Behaviours</Filter>
     </ClCompile>
     <ClCompile Include="Avoidance.cpp">
-      <Filter>Base\Source\Behaviours</Filter>
-    </ClCompile>
-    <ClCompile Include="Boid.cpp">
-      <Filter>Objects\Source\Boids</Filter>
+      <Filter>Base\Source\Boids\Behaviours</Filter>
     </ClCompile>
     <ClCompile Include="Behaviour.cpp">
-      <Filter>Base\Source\Behaviours</Filter>
+      <Filter>Base\Source\Boids\Behaviours</Filter>
     </ClCompile>
     <ClCompile Include="TweakBar.cpp">
       <Filter>Base\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStatesEnum.cpp">
+      <Filter>Base\Source\States</Filter>
+    </ClCompile>
+    <ClCompile Include="BoidData.cpp">
+      <Filter>Base\Source\Boids</Filter>
+    </ClCompile>
+    <ClCompile Include="BoidManager.cpp">
+      <Filter>Base\Source\Boids</Filter>
+    </ClCompile>
+    <ClCompile Include="Boid.cpp">
+      <Filter>Objects\Boids</Filter>
+    </ClCompile>
+    <ClCompile Include="PositionCheck.cpp">
+      <Filter>Base\Source\Boids</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -15,6 +15,8 @@
 class BoidData;
 class Boid;
 
+class PositionCheck;
+
 class Behaviour;
 
 struct GameData;
@@ -69,8 +71,11 @@ private:
 	// Faction Variables
 	BoidData* boidDataRed;
 	BoidData* boidDataGreen;
+	BoidData* boidDataPurple;
 
 	Boid* boid;
+
+	PositionCheck* m_posCheck;
 
 	int updateGroup;
 	int currentNoBoids;

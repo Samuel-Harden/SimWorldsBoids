@@ -6,7 +6,7 @@
 //=================================================================
 
 #include <dinput.h>
-#include "GameState.h"
+#include "GameStateEnum.h"
 #include "camera.h"
 
 using namespace DirectX;
@@ -14,7 +14,7 @@ using namespace DirectX;
 struct GameData
 {
 	float m_dt;  //time step since last frame
-	GameState m_GS; //global GameState
+	GameStateEnum m_GS; //global GameState
 
 	//player input
 	unsigned char* m_keyboardState; //current state of the Keyboard

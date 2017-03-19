@@ -8,7 +8,7 @@
 
 
 
-enum GameState 
+enum GameStateEnum
 {
 	GS_NULL = 0,
 	GS_MAIN_MENU,
@@ -27,5 +27,5 @@ enum CameraState
 
 
 
-extern GameState game_state;
+extern GameStateEnum game_state;
 extern CameraState camera_state;

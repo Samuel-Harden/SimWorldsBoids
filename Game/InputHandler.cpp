@@ -76,7 +76,7 @@ bool InputHandler::Tick(GameData* _GD, BoidManager* _boidManager,
 {
 	// GAME STATE CHECKS
 	// If the player is on the main menu
-	if (game_state == GameState::GS_MAIN_MENU)
+	if (game_state == GameStateEnum::GS_MAIN_MENU)
 	{
 		// On pressing escape send signal back to application class to shutdown
 		if ((m_keyboardState[DIK_ESCAPE] & 0x80) &&
@@ -89,18 +89,18 @@ bool InputHandler::Tick(GameData* _GD, BoidManager* _boidManager,
 		// On pressing escape send signal back to application class to shutdown
 		if (m_keyboardState[DIK_RETURN] & 0x80)
 		{
-			game_state = GameState::GS_PLAY_GAME;
+			game_state = GameStateEnum::GS_PLAY_GAME;
 			return true;
 		}
 	}
 
 	// If the player is 'In Game'
-	if (game_state == GameState::GS_PLAY_GAME)
+	if (game_state == GameStateEnum::GS_PLAY_GAME)
 	{
 		if ((m_keyboardState[DIK_P] & 0x80) &&
 			!(m_prevKeyboardState[DIK_P] & 0x80))
 		{
-			game_state = GameState::GS_PAUSE;
+			game_state = GameStateEnum::GS_PAUSE;
 			return true;
 		}
 
@@ -127,18 +127,18 @@ bool InputHandler::Tick(GameData* _GD, BoidManager* _boidManager,
 		}
 	}
 
-	if (game_state == GameState::GS_PAUSE)
+	if (game_state == GameStateEnum::GS_PAUSE)
 	{
 		if ((m_keyboardState[DIK_P] & 0x80) &&
 			!(m_prevKeyboardState[DIK_P] & 0x80))
 		{
-			game_state = GameState::GS_PLAY_GAME;
+			game_state = GameStateEnum::GS_PLAY_GAME;
 			return true;
 		}
 		if ((m_keyboardState[DIK_ESCAPE] & 0x80) &&
 			!(m_prevKeyboardState[DIK_ESCAPE] & 0x80))
 		{
-			game_state = GameState::GS_MAIN_MENU;
+			game_state = GameStateEnum::GS_MAIN_MENU;
 			_boidManager->resetPreyBoids();
 			return true;
 		}

@@ -113,7 +113,7 @@ Game::Game(ID3D11Device* _pd3dDevice, HWND _hWnd, HINSTANCE _hInstance)
 	m_boidManager = std::make_unique<BoidManager>(_pd3dDevice, maxBoids);
 	
 	// Set States + camera
-	game_state = GameState::GS_MAIN_MENU;
+	game_state = GameStateEnum::GS_MAIN_MENU;
 	camera_state = CameraState::FREE_CAMERA;
 	current_cam = m_freeCam;
 
@@ -148,13 +148,6 @@ Game::~Game()
 		delete (*it);
 	}
 	m_GameObjects.clear();
-
-	//and the 2D ones
-	for (list<GameObject2D *>::iterator it = m_GameObject2Ds.begin(); it != m_GameObject2Ds.end(); it++)
-	{
-		delete (*it);
-	}
-	m_GameObject2Ds.clear();
 
 	//clear away CMO render system
 	delete m_states;
@@ -191,7 +184,7 @@ bool Game::Tick()
 	}
 
 	// If the player is 'In Game'
-	if (game_state == GameState::GS_PLAY_GAME)
+	if (game_state == GameStateEnum::GS_PLAY_GAME)
 	{
 		PlayTick();
 	}
@@ -224,10 +217,6 @@ void Game::PlayTick()
 	{
 		(*it)->Tick(m_GD);
 	}
-	for (list<GameObject2D *>::iterator it = m_GameObject2Ds.begin(); it != m_GameObject2Ds.end(); it++)
-	{
-		(*it)->Tick(m_GD);
-	}
 
 	m_boidManager->Tick(m_GD);
 }
@@ -250,30 +239,22 @@ void Game::Draw(ID3D11DeviceContext* _pd3dImmediateContext)
 
 	m_boidManager->Draw(m_DD);
 
-	if (game_state == GameState::GS_MAIN_MENU)
+	if (game_state == GameStateEnum::GS_MAIN_MENU)
 	{
 		displayMainMenu();
 	}
 
-	if (game_state == GameState::GS_PLAY_GAME || game_state == GameState::GS_PAUSE)
+	if (game_state == GameStateEnum::GS_PLAY_GAME || game_state == GameStateEnum::GS_PAUSE)
 	{
 		//draw all objects
 		for (list<GameObject *>::iterator it = m_GameObjects.begin(); it != m_GameObjects.end(); it++)
 		{
 			(*it)->Draw(m_DD);
 		}
-		// Draw sprite batch stuff 
-		m_DD2D->m_Sprites->Begin();
-		for (list<GameObject2D *>::iterator it = m_GameObject2Ds.begin(); it != m_GameObject2Ds.end(); it++)
-		{
-			(*it)->Draw(m_DD2D);
-		}
-		m_DD2D->m_Sprites->End();
-
 		TwDraw();
 	}
 
-	if (game_state == GameState::GS_PAUSE)
+	if (game_state == GameStateEnum::GS_PAUSE)
 	{
 		displayPauseMenu();
 	}
