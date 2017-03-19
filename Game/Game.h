@@ -35,6 +35,8 @@ class Light;
 class BoidManager;
 class InputHandler;
 
+class TweakBar;
+
 class Game
 {
 public:
@@ -60,6 +62,8 @@ protected:
 	std::unique_ptr<BoidManager> m_boidManager;
 	std::unique_ptr<InputHandler> m_inputHandler;
 
+	std::unique_ptr<TweakBar> m_tweakBar;
+
 	//required for the CMO model rendering system
 	CommonStates* m_states;
 	IEffectFactory* m_fxFactory;
@@ -77,16 +81,13 @@ protected:
 	void PlayTick();
 
 private:
-	const int maxBoids = 999;
+	const int maxBoids = 1200;
 
 	float screenWidth;
 	float screenHeight;
 
 	void displayMainMenu();
 	void displayPauseMenu();
-	void setTweakBar(ID3D11Device* _pd3dDevice);
 
 	void displayText(const char* input, int& posX, int& posY);
-
-	TwBar* boidVariables;
 };

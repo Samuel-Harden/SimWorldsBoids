@@ -162,7 +162,7 @@ void Boid::run(std::vector<Boid*>& _boids, GameData* _GD,
 	int _boidGroup, BoidData* _boidData, std::vector<Behaviour*> _behaviours)
 {
 	// If this boid, is in the current group to be updated, update behaviours...
-	if (boidID >= _boidGroup && boidID <= (_boidGroup + 99))
+	if (boidID >= _boidGroup && boidID <= (_boidGroup + 100))
 	{
 		flock(_boids, _GD, _boidData,  _behaviours);
 	}
@@ -182,9 +182,6 @@ void Boid::flock(std::vector<Boid*>& _boids, GameData* _GD,
 	Vector3 pred  = _behaviours[1]->calculateBehaviour2(this, _boidData);
 	Vector3 coh   = _behaviours[2]->calculateBehaviour1(this, _boidData, _boids);    // Cohesion
 	Vector3 sep   = _behaviours[3]->calculateBehaviour1(this, _boidData, _boids);    // Seperation
-
-
-	//groupColor(_boids);              // Function not currently working...
 
 	// Arbitrarily weight these force
 	sep *= _boidData->sepWeight;

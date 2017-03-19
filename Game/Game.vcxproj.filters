@@ -165,6 +165,9 @@
     <ClInclude Include="Behaviour.h">
       <Filter>Base\Headers\Behaviours</Filter>
     </ClInclude>
+    <ClInclude Include="TweakBar.h">
+      <Filter>Base\Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -244,6 +247,9 @@
     </ClCompile>
     <ClCompile Include="Behaviour.cpp">
       <Filter>Base\Source\Behaviours</Filter>
+    </ClCompile>
+    <ClCompile Include="TweakBar.cpp">
+      <Filter>Base\Source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -20,25 +20,7 @@ BoidManager::BoidManager(ID3D11Device* _pd3dDevice, const int& _maxBoids)
 {
 	m_boids.reserve(_maxBoids);
 
-	int id = 0;
-	int faction = 0;
-
-	for (int i = 0; i < _maxBoids; i++)
-	{
-		boid = new Boid(id, faction); // Pass in an int - Sets Boids ID
-		boid->init(_pd3dDevice);
-		m_boids.push_back(boid);
-		currentNoBoids++;
-		id++;
-		faction++;
-
-		// reset faction
-		if (faction == 3)
-		{
-			faction = 0;
-		}
-	}
-
+	createBoids(_pd3dDevice, _maxBoids);
 	createBehaviours();
 	createBoidData();
 }
@@ -107,14 +89,14 @@ void BoidManager::updateBoids(GameData* _GD)
 			m_boids[i]->run(m_boids, _GD, updateGroup, m_boidData[j], m_behaviours);
 			j++;
 
-			if (j > 2)
+			if (j > 1)
 			{
 				j = 0;
 			}
 		}
 	}
 
-		updateGroup += 99;
+	updateGroup += 100;
 
 	if (updateGroup >= m_boids.size())
 	{
@@ -137,8 +119,8 @@ void BoidManager::spawnBoid()
 			activeBoids++;
 			boidsActivated++;
 
-			// once three boids (one of each faction) has spawned, return
-			if (boidsActivated == 3)
+			// once two boids (one of each faction) has spawned, return
+			if (boidsActivated == 2)
 			{
 				return;
 			}
@@ -155,6 +137,29 @@ void BoidManager::resetPreyBoids()
 		if (m_boids[i]->isActive == true)
 		{
 			m_boids[i]->deactivateBoid();
+		}
+	}
+}
+
+
+void BoidManager::createBoids(ID3D11Device* _pd3dDevice, const int& _maxBoids)
+{
+	int id = 0;
+	int faction = 0;
+
+	for (int i = 0; i < _maxBoids; i++)
+	{
+		boid = new Boid(id, faction); // Pass in an int - Sets Boids ID
+		boid->init(_pd3dDevice);
+		m_boids.push_back(boid);
+		currentNoBoids++;
+		id++;
+		faction++;
+
+		// reset faction
+		if (faction > 1)
+		{
+			faction = 0;
 		}
 	}
 }
@@ -186,9 +191,6 @@ void BoidManager::createBoidData()
 
 	boidDataGreen = new BoidData();
 	m_boidData.push_back(boidDataGreen);
-
-	boidDataPurple = new BoidData();
-	m_boidData.push_back(boidDataPurple);
 }
 
 

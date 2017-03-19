@@ -15,6 +15,7 @@ public:
 	friend class Alignment;
 	friend class Cohesion;
 	friend class Avoidance;
+	friend class Homing;
 
 	BoidData();
 	~BoidData();

@@ -48,9 +48,9 @@ void FreeCamera::decreaseZoom()
 {
 	m_dpos.z += 10.0f;
 
-	if (m_dpos.z > 500.0f)
+	if (m_dpos.z > 800.0f)
 	{
-		m_dpos.z = 500.0f;
+		m_dpos.z = 800.0f;
 	}
 }
 

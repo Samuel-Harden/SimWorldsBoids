@@ -55,6 +55,7 @@ private:
 
 	void createBehaviours();
 	void createBoidData();
+	void createBoids(ID3D11Device* _pd3dDevice, const int& _maxBoids);
 
 	void updateBoids(GameData* _GD);
 
@@ -68,7 +69,6 @@ private:
 	// Faction Variables
 	BoidData* boidDataRed;
 	BoidData* boidDataGreen;
-	BoidData* boidDataPurple;
 
 	Boid* boid;
 
