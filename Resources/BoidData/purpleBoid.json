@@ -1,0 +1,13 @@
+{
+  "RedBoid": {
+    "aliWeight"     :  1.0,
+	"cohWeight"     :  1.0,
+    "sepWeight"     :  0.5,
+	"runWeight"     :  0.2,
+	"ffWeight"      :  0.4,
+	"boidMaxSpeed"  :  0.5,
+	"boidMaxForce"  : 0.03,
+    "neighbourDist" : 30.0,
+	"desiredSep"    :  5.0
+  }
+}

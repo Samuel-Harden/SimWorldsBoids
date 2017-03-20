@@ -6,6 +6,7 @@
 #include "BoidData.h"
 
 #include "PositionCheck.h"
+#include "FileReader.h"
 
 // Behaviours
 #include "Behaviour.h"
@@ -14,15 +15,22 @@
 #include "Cohesion.h"
 #include "Separation.h"
 
+#include <jsoncons/json.hpp>
+
 
 BoidManager::BoidManager(ID3D11Device* _pd3dDevice, const int& _maxBoids)
 	:  currentNoBoids(0),
-	      updateGroup(0),
-	      activeBoids(0)
+	   updateGroup(0),
+	   activeBoids(0),
+	   boidRedFileName("..\\Resources\\BoidData\\redBoid.json"),
+	   boidGreenFileName("..\\Resources\\BoidData\\greenBoid.json"),
+	   boidPurpleFileName("..\\Resources\\BoidData\\purpleBoid.json")
 {
 	m_boids.reserve(_maxBoids);
 
-	m_posCheck = new PositionCheck();
+	m_fileReader = std::make_unique<FileReader>();
+
+	m_posCheck = new PositionCheck(); // NEW needs to be DELETED!
 
 	createBoids(_pd3dDevice, _maxBoids);
 	createBehaviours();
@@ -51,6 +59,8 @@ BoidManager::~BoidManager()
 	}
 
 	m_boidData.clear();
+	delete m_posCheck;
+	m_posCheck = nullptr;
 }
 
 
@@ -190,13 +200,13 @@ void BoidManager::createBehaviours()
 void BoidManager::createBoidData()
 {
 	// Each faction has its own boid data...
-	boidDataRed = new BoidData();
+	boidDataRed = new BoidData(m_fileReader, boidRedFileName);
 	m_boidData.push_back(boidDataRed);
 
-	boidDataGreen = new BoidData();
+	boidDataGreen = new BoidData(m_fileReader, boidGreenFileName);
 	m_boidData.push_back(boidDataGreen);
 
-	boidDataPurple = new BoidData();
+	boidDataPurple = new BoidData(m_fileReader, boidPurpleFileName);
 	m_boidData.push_back(boidDataPurple);
 }
 

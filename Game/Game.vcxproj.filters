@@ -183,6 +183,9 @@
     <ClInclude Include="PositionCheck.h">
       <Filter>Base\Headers\Boids</Filter>
     </ClInclude>
+    <ClInclude Include="FileReader.h">
+      <Filter>Base\Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -268,6 +271,9 @@
     </ClCompile>
     <ClCompile Include="PositionCheck.cpp">
       <Filter>Base\Source\Boids</Filter>
+    </ClCompile>
+    <ClCompile Include="FileReader.cpp">
+      <Filter>Base\Source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

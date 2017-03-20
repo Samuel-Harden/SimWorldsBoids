@@ -1,19 +1,13 @@
 #include "BoidData.h"
 
+#include "FileReader.h"
 
 
-BoidData::BoidData()
-	  : sepWeight(0.5f),
-	     ffWeight(0.4f),
-	    runWeight(0.2f),
-	    aliWeight(1.0f),
-	    cohWeight(1.0f),
-     boidMaxSpeed(0.5f),
-    boidMaxForce(0.03f),
-   neighbourDist(30.0f),
-	   desiredSep(5.0f)
+
+BoidData::BoidData(std::unique_ptr<FileReader>& _fileReader, std::string& _fileName)
 {
-
+	// passes itself through to the filereader, sets variables from Json
+	_fileReader->setData(this, _fileName);
 }
 
 

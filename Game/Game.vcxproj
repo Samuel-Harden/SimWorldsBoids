@@ -72,13 +72,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>..\Bin\Desktop_2015\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>..\Bin\Desktop_2015\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>D:\Documents\GitHub\SimWorldsBoids\AntTweakBar\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Libs\jsoncons\include;D:\Documents\GitHub\SimWorldsBoids\AntTweakBar\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\Documents\GitHub\SimWorldsBoids\AntTweakBar\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>..\Bin\Desktop_2015\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>..\Bin\Desktop_2015\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>D:\Documents\GitHub\SimWorldsBoids\AntTweakBar\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Libs\jsoncons\include;D:\Documents\GitHub\SimWorldsBoids\AntTweakBar\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\Documents\GitHub\SimWorldsBoids\AntTweakBar\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -136,6 +136,7 @@
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="DrawData2D.h" />
     <ClInclude Include="DrawData.h" />
+    <ClInclude Include="FileReader.h" />
     <ClInclude Include="fileVBGO.h" />
     <ClInclude Include="FreeCamera.h" />
     <ClInclude Include="Game.h" />
@@ -173,6 +174,7 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="CMOGO.cpp" />
     <ClCompile Include="Cohesion.cpp" />
+    <ClCompile Include="FileReader.cpp" />
     <ClCompile Include="fileVBGO.cpp" />
     <ClCompile Include="FreeCamera.cpp" />
     <ClCompile Include="Game.cpp" />

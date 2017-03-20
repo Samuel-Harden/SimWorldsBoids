@@ -10,10 +10,11 @@
 
 #include <vector>
 #include <memory>
-//#include "Model.h"
+#include <string>
 
 class BoidData;
 class Boid;
+class FileReader;
 
 class PositionCheck;
 
@@ -65,6 +66,8 @@ private:
 
 	std::vector<Behaviour*> m_behaviours;
 
+	std::unique_ptr<FileReader> m_fileReader;
+
 	// Vector to hold containers of faction Variables
 	std::vector<BoidData*> m_boidData;
 
@@ -72,6 +75,10 @@ private:
 	BoidData* boidDataRed;
 	BoidData* boidDataGreen;
 	BoidData* boidDataPurple;
+
+	std::string boidRedFileName;
+	std::string boidGreenFileName;
+	std::string boidPurpleFileName;
 
 	Boid* boid;
 
