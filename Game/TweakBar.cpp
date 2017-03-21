@@ -13,7 +13,7 @@ TweakBar::TweakBar(ID3D11Device* _pd3dDevice,
 	TwWindowSize(_screenWidth, _screenHeight);
 
 	boidVariables = TwNewBar("Boid Parameters:");
-	int myBarSize[2] = { 325, 840 };
+	int myBarSize[2] = { 325, 930 };
 	TwSetParam(boidVariables, NULL, "size", TW_PARAM_INT32, 2, myBarSize);
 
 	// AntTweakBar Buttons /////////////////////////////////////////////////////
@@ -43,7 +43,7 @@ TweakBar::TweakBar(ID3D11Device* _pd3dDevice,
 		&_boidManager->getFlightFightWeight(0), "min=-50.0 max=50.0 step=0.1");
 
 	TwAddVarRW(boidVariables, "Red   - Path Finding - (Weight): ", TW_TYPE_FLOAT,
-		&_boidManager->getPathFindingWeight(0), "min=-50.0 max=0.0 step=0.5");
+		&_boidManager->getPathFindingWeight(0), "min=-5.0 max=5.0 step=0.1");
 
 	TwAddVarRW(boidVariables, "Red   - Avoid Player - (Weight): ", TW_TYPE_FLOAT,
 		&_boidManager->getRunWeight(0), "min=-50.0 max=50.0 step=0.1");
@@ -75,10 +75,10 @@ TweakBar::TweakBar(ID3D11Device* _pd3dDevice,
 	TwAddVarRW(boidVariables, "Green - Fight/Flight - (Weight): ", TW_TYPE_FLOAT,
 		&_boidManager->getFlightFightWeight(1), "min=-50.0 max=50.0 step=0.1");
 
-	TwAddVarRW(boidVariables, "Green   - Path Finding - (Weight): ", TW_TYPE_FLOAT,
-		&_boidManager->getPathFindingWeight(1), "min=-50.0 max=0.0 step=0.5");
+	TwAddVarRW(boidVariables, "Green  - Path Finding - (Weight): ", TW_TYPE_FLOAT,
+		&_boidManager->getPathFindingWeight(1), "min=-5.0 max=5.0 step=0.1");
 
-	TwAddVarRW(boidVariables, "Green   - Avoid Player - (Weight): ", TW_TYPE_FLOAT,
+	TwAddVarRW(boidVariables, "Green  - Avoid Player - (Weight): ", TW_TYPE_FLOAT,
 		&_boidManager->getRunWeight(1), "min=-50.0 max=50.0 step=0.1");
 
 	TwAddSeparator(boidVariables, "sep2", NULL);
@@ -109,7 +109,7 @@ TweakBar::TweakBar(ID3D11Device* _pd3dDevice,
 		&_boidManager->getFlightFightWeight(2), "min=-50.0 max=50.0 step=0.1");
 
 	TwAddVarRW(boidVariables, "Purple   - Path Finding - (Weight): ", TW_TYPE_FLOAT,
-		&_boidManager->getPathFindingWeight(2), "min=-50.0 max=0.0 step=0.5");
+		&_boidManager->getPathFindingWeight(2), "min=-5.0 max=5.0 step=0.1");
 
 	TwAddVarRW(boidVariables, "Purple   - Avoid Player - (Weight): ", TW_TYPE_FLOAT,
 		&_boidManager->getRunWeight(2), "min=-50.0 max=50.0 step=0.1");
@@ -172,6 +172,30 @@ TweakBar::TweakBar(ID3D11Device* _pd3dDevice,
 
 	TwAddVarRW(boidVariables, "WayPoint4 PosZ: ", TW_TYPE_FLOAT,
 		&_boidManager->getWayPointPosZ(3), "min=-180.0 max=180.0 step=5.0");
+
+	TwAddSeparator(boidVariables, "sep8", NULL);
+	TwDefine(" barName/sep8 group='Parameters8' ");
+
+	TwAddVarRW(boidVariables, "WayPoint5 PosX: ", TW_TYPE_FLOAT,
+		&_boidManager->getWayPointPosX(4), "min=-180.0 max=180.0 step=5.0");
+
+	TwAddVarRW(boidVariables, "WayPoint5 PosY: ", TW_TYPE_FLOAT,
+		&_boidManager->getWayPointPosY(4), "min=-180.0 max=180.0 step=5.0");
+
+	TwAddVarRW(boidVariables, "WayPoint5 PosZ: ", TW_TYPE_FLOAT,
+		&_boidManager->getWayPointPosZ(4), "min=-180.0 max=180.0 step=5.0");
+
+	TwAddSeparator(boidVariables, "sep9", NULL);
+	TwDefine(" barName/sep9 group='Parameters9' ");
+
+	TwAddVarRW(boidVariables, "WayPoint6 PosX: ", TW_TYPE_FLOAT,
+		&_boidManager->getWayPointPosX(5), "min=-180.0 max=180.0 step=5.0");
+
+	TwAddVarRW(boidVariables, "WayPoint6 PosY: ", TW_TYPE_FLOAT,
+		&_boidManager->getWayPointPosY(5), "min=-180.0 max=180.0 step=5.0");
+
+	TwAddVarRW(boidVariables, "WayPoint6 PosZ: ", TW_TYPE_FLOAT,
+		&_boidManager->getWayPointPosZ(5), "min=-180.0 max=180.0 step=5.0");
 
 
 	// End AntTweakBar Stuff ///////////////////////////////////////////////////

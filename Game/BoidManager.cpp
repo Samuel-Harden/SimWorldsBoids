@@ -24,7 +24,7 @@ BoidManager::BoidManager(ID3D11Device* _pd3dDevice, const int& _maxBoids)
 	:  currentNoBoids(0),
 	   updateGroup(0),
 	   activeBoids(0),
-	   noWayPoints(4),
+	   noWayPoints(6),
 	   boidRedFileName("..\\Resources\\BoidData\\redBoid.json"),
 	   boidGreenFileName("..\\Resources\\BoidData\\greenBoid.json"),
 	   boidPurpleFileName("..\\Resources\\BoidData\\purpleBoid.json")

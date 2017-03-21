@@ -9,7 +9,7 @@
 class FreeCamera : public Camera
 {
 public:
-	FreeCamera(float _fieldOfView, float _aspectRatio, float _nearPlaneDistance, float _farPlaneDistance, Vector3 _up, Vector3 _dpos);
+	FreeCamera(float _fieldOfView, float _aspectRatio, float _nearPlaneDistance, float _farPlaneDistance, GameObject* _target, Vector3 _up, Vector3 _dpos);
 	virtual ~FreeCamera();
 
 	virtual void Tick(GameData* _GD) override;

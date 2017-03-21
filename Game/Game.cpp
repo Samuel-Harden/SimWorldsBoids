@@ -92,7 +92,7 @@ Game::Game(ID3D11Device* _pd3dDevice, HWND _hWnd, HINSTANCE _hInstance)
 	m_GameObjects.push_back(pPlayer);
 
 	//create a primary camera
-	m_freeCam = new FreeCamera(0.25f * XM_PI, AR, 1.0f, 10000.0f,
+	m_freeCam = new FreeCamera(0.25f * XM_PI, AR, 1.0f, 10000.0f, pPlayer,
 		Vector3::UnitY, Vector3(0.0f, 10.0f, 120.0f));
 	m_freeCam->SetPos(Vector3(0.0f, 0.0f, 150.0f));
 	m_GameObjects.push_back(m_freeCam);

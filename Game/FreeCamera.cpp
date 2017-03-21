@@ -1,10 +1,10 @@
 #include "FreeCamera.h"
 #include "GameData.h"
 
-FreeCamera::FreeCamera(float _fieldOfView, float _aspectRatio, float _nearPlaneDistance, float _farPlaneDistance, Vector3 _up, Vector3 _dpos)
+FreeCamera::FreeCamera(float _fieldOfView, float _aspectRatio, float _nearPlaneDistance, float _farPlaneDistance, GameObject* _target, Vector3 _up, Vector3 _dpos)
 	:Camera(_fieldOfView, _aspectRatio, _nearPlaneDistance, _farPlaneDistance, _up)
 {
-	//m_targetObject = Vector3::Zero;
+	m_targetObject = _target;
 	m_dpos = _dpos;
 }
 
@@ -21,10 +21,10 @@ void FreeCamera::Tick(GameData* _GD)
 	Matrix rotCam = Matrix::CreateFromYawPitchRoll(getYaw(), getPitch(), 0.0f);
 
 	// Sets the positon of the camera
-	m_pos = Vector3(0.01f, 0.01f, 0.01f) + Vector3::Transform(m_dpos, rotCam);
+	m_pos = m_targetObject->getPos() + Vector3::Transform(m_dpos, rotCam);
 
 	// Sets what the camera is looking at
-	m_target = Vector3(0.01f, 0.01f, 0.01f);
+	m_target = m_targetObject->getPos();
 
 	// Then set up proj and view matrices
 	Camera::Tick(_GD);
