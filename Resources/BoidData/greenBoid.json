@@ -5,6 +5,7 @@
     "sepWeight"     :  0.5,
 	"runWeight"     :  0.2,
 	"ffWeight"      :  0.4,
+	"pathWeight"    :  0.0,
 	"boidMaxSpeed"  :  0.5,
 	"boidMaxForce"  : 0.03,
     "neighbourDist" : 30.0,

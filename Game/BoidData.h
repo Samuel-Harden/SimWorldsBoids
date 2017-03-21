@@ -18,7 +18,7 @@ public:
 	friend class Alignment;
 	friend class Cohesion;
 	friend class Avoidance;
-	friend class Homing;
+	friend class PathFinding;
 
 	BoidData(std::unique_ptr<FileReader>& _fileReader, std::string& _fileName);
 	~BoidData();
@@ -31,6 +31,7 @@ protected:
 	float aliWeight;
 	float cohWeight;
 	float runWeight;
+	float pathWeight;
 
 	// Boid Variables
 	float boidMaxSpeed;

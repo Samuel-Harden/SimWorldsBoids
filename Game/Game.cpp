@@ -83,7 +83,7 @@ Game::Game(ID3D11Device* _pd3dDevice, HWND _hWnd, HINSTANCE _hInstance)
 	screenHeight = height;
 
 	//create a base light
-	m_light = new Light(Vector3(0.0f, 200.0f, 260.0f), 
+	m_light = new Light(Vector3(220.0f, 220.0f, 220.0f), 
 		Color(1.0f, 1.0f, 1.0f, 1.0f), Color(0.4f, 0.1f, 0.1f, 1.0f));
 	m_GameObjects.push_back(m_light);
 
@@ -237,8 +237,6 @@ void Game::Draw(ID3D11DeviceContext* _pd3dImmediateContext)
 	//update the constant buffer for the rendering of VBGOs
 	VBGO::UpdateConstantBuffer(m_DD);
 
-	m_boidManager->Draw(m_DD);
-
 	if (game_state == GameStateEnum::GS_MAIN_MENU)
 	{
 		displayMainMenu();
@@ -246,6 +244,8 @@ void Game::Draw(ID3D11DeviceContext* _pd3dImmediateContext)
 
 	if (game_state == GameStateEnum::GS_PLAY_GAME || game_state == GameStateEnum::GS_PAUSE)
 	{
+		m_boidManager->Draw(m_DD);
+
 		//draw all objects
 		for (list<GameObject *>::iterator it = m_GameObjects.begin(); it != m_GameObjects.end(); it++)
 		{

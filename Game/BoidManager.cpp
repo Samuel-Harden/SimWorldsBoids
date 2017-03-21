@@ -4,6 +4,7 @@
 #include "GameData.h"
 #include "DrawData.h"
 #include "BoidData.h"
+#include "Waypoint.h"
 
 #include "PositionCheck.h"
 #include "FileReader.h"
@@ -14,6 +15,7 @@
 #include "Avoidance.h"
 #include "Cohesion.h"
 #include "Separation.h"
+#include "PathFinding.h"
 
 #include <jsoncons/json.hpp>
 
@@ -22,15 +24,19 @@ BoidManager::BoidManager(ID3D11Device* _pd3dDevice, const int& _maxBoids)
 	:  currentNoBoids(0),
 	   updateGroup(0),
 	   activeBoids(0),
+	   noWayPoints(4),
 	   boidRedFileName("..\\Resources\\BoidData\\redBoid.json"),
 	   boidGreenFileName("..\\Resources\\BoidData\\greenBoid.json"),
 	   boidPurpleFileName("..\\Resources\\BoidData\\purpleBoid.json")
 {
 	m_boids.reserve(_maxBoids);
+	m_wpPos.reserve(noWayPoints);
 
 	m_fileReader = std::make_unique<FileReader>();
 
 	m_posCheck = new PositionCheck(); // NEW needs to be DELETED!
+
+	createWaypoints(_pd3dDevice);
 
 	createBoids(_pd3dDevice, _maxBoids);
 	createBehaviours();
@@ -58,7 +64,15 @@ BoidManager::~BoidManager()
 		(*it) = nullptr;
 	}
 
-	m_boidData.clear();
+	for (std::vector<WayPoint*>::iterator it = m_wayPoints.begin();
+	it != m_wayPoints.end(); it++)
+	{
+		delete (*it);
+		(*it) = nullptr;
+	}
+
+	m_wayPoints.clear();
+
 	delete m_posCheck;
 	m_posCheck = nullptr;
 }
@@ -75,6 +89,8 @@ void BoidManager::Tick(GameData* _GD)
 	}
 
 	updateBoids(_GD);
+
+	updateWayPoints(_GD);
 }
 
 
@@ -88,19 +104,25 @@ void BoidManager::Draw(DrawData* _DD)
 			m_boids[i]->Draw(_DD);
 		}
 	}
+
+	for (int i = 0; i < noWayPoints; i++)
+	{
+		m_wayPoints[i]->Draw(_DD);
+	}
 }
 
 
 
 void BoidManager::updateBoids(GameData* _GD)
 {
-	int j = 0;
+	int j = 0; // J refers to each faction, so that each faction will have the
+	           // same number of boids updated during any one 'tick'
 
 	for (int i = 0; i < currentNoBoids; i++)
 	{
 		if (m_boids[i]->isActive == true)
 		{
-			m_boids[i]->run(m_boids, _GD, updateGroup, m_boidData[j], m_behaviours, m_posCheck);
+			m_boids[i]->run(m_boids, _GD, updateGroup, m_boidData[j], m_behaviours, m_posCheck, m_wpPos);
 			j++;
 
 			if (j > 2)
@@ -120,6 +142,16 @@ void BoidManager::updateBoids(GameData* _GD)
 
 
 
+void BoidManager::updateWayPoints(GameData* _GD)
+{
+	for (int i = 0; i < noWayPoints; i++)
+	{
+		m_wayPoints[i]->Tick(_GD, m_wpPos[i]);
+	}
+}
+
+
+
 void BoidManager::spawnBoid()
 {
 	// Spawns one of each faction/colour
@@ -133,7 +165,7 @@ void BoidManager::spawnBoid()
 			activeBoids++;
 			boidsActivated++;
 
-			// once two boids (one of each faction) has spawned, return
+			// once three boids (one of each faction) have spawned, return
 			if (boidsActivated == 3)
 			{
 				return;
@@ -144,7 +176,7 @@ void BoidManager::spawnBoid()
 
 
 
-void BoidManager::resetPreyBoids()
+void BoidManager::resetBoids()
 {
 	for (int i = 0; i < m_boids.size(); i++)
 	{
@@ -194,6 +226,9 @@ void BoidManager::createBehaviours()
 
 	Separation* m_sep = new Separation();
 	m_behaviours.push_back(m_sep);
+
+	PathFinding* m_pf = new PathFinding();
+	m_behaviours.push_back(m_pf);
 }
 
 
@@ -208,6 +243,20 @@ void BoidManager::createBoidData()
 
 	boidDataPurple = new BoidData(m_fileReader, boidPurpleFileName);
 	m_boidData.push_back(boidDataPurple);
+}
+
+
+
+void BoidManager::createWaypoints(ID3D11Device* _pd3dDevice)
+{
+	for (int i = 0; i < noWayPoints; i++)
+	{
+		wayPoint = new WayPoint();
+		wayPoint->init(_pd3dDevice);
+		m_wpPos.push_back(wayPoint->getPos());
+		m_wayPoints.push_back(wayPoint);
+	}
+
 }
 
 
@@ -264,6 +313,13 @@ float& BoidManager::getCohWeight(int _faction)
 
 
 
+float& BoidManager::getPathFindingWeight(int _faction)
+{
+	return m_boidData[_faction]->pathWeight;
+}
+
+
+
 float& BoidManager::getFlightFightWeight(int _faction)
 {
 	return m_boidData[_faction]->ffWeight;
@@ -274,4 +330,25 @@ float& BoidManager::getFlightFightWeight(int _faction)
 float& BoidManager::getRunWeight(int _faction)
 {
 	return m_boidData[_faction]->runWeight;
+}
+
+
+
+float& BoidManager::getWayPointPosX(int _wayPoint)
+{
+	return m_wpPos[_wayPoint].x;
+}
+
+
+
+float& BoidManager::getWayPointPosY(int _wayPoint)
+{
+	return m_wpPos[_wayPoint].y;
+}
+
+
+
+float& BoidManager::getWayPointPosZ(int _wayPoint)
+{
+	return m_wpPos[_wayPoint].z;
 }

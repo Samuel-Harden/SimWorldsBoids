@@ -16,14 +16,19 @@ public:
 	Boid(int& _ID, int& _faction);
 	virtual ~Boid();
 
-	//initialise the Veretx and Index buffers for the cube
+	//initialise the Veretx and Index buffers for the Boid
 	void init(ID3D11Device* _GD);
 
 	void Tick(GameData* _GD, BoidData* _BD);
-	void run(std::vector<Boid*>& boids, GameData* _GD, int _boidGroup, BoidData* _boidData, std::vector<Behaviour*> _behaviours, PositionCheck*& _posCheck);
+	void run(std::vector<Boid*>& boids, GameData* _GD, int _boidGroup,
+		BoidData* _boidData, std::vector<Behaviour*> _behaviours,
+		PositionCheck*& _posCheck, std::vector<Vector3>& _wpPos);
 
 	Vector3 getVelocity() const;
 	int getFaction() const;
+
+	void setWayPointID(int& _newWayPoint);
+	int getWayPointID() const;
 
 	bool isActive;
 	void activateBoid();
@@ -38,7 +43,7 @@ private:
 
 	// Functions
 	void flock(std::vector<Boid*>& _boids, GameData* _GD, BoidData*& _boidData,
-		std::vector<Behaviour*> _behaviours);
+		std::vector<Behaviour*> _behaviours, std::vector<Vector3>& _wpPos);
 
 	void applyForce(Vector3& force);
 
@@ -54,8 +59,11 @@ private:
 	Vector3 velocity;
 	Vector3 acceleration;
 
+	Vector3 m_currentWayPoint;
+
 	int boidID;
 	int faction;
+	int wayPointID;
 
 	float boidRed;	  // Red colour Value for Vertices
 	float boidBlue;	  // Blue colour Value for Vertices

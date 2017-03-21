@@ -31,3 +31,11 @@ DirectX::SimpleMath::Vector3 Behaviour::calculateBehaviour2(Boid* _boid, BoidDat
 	// Default Value...
 	return DirectX::SimpleMath::Vector3::Zero;
 }
+
+
+
+DirectX::SimpleMath::Vector3 Behaviour::calculateBehaviour3(Boid* _boid, BoidData* _BD, std::vector<Vector3>& _wpPos)
+{
+	// Default Value...
+	return DirectX::SimpleMath::Vector3::Zero;
+}

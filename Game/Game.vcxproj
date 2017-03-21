@@ -150,6 +150,7 @@
     <ClInclude Include="Light.h" />
     <ClInclude Include="MarchCubes.h" />
     <ClInclude Include="ObjectList.h" />
+    <ClInclude Include="PathFinding.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PositionCheck.h" />
     <ClInclude Include="Separation.h" />
@@ -164,6 +165,7 @@
     <ClInclude Include="VBSpiked.h" />
     <ClInclude Include="VBspiral.h" />
     <ClInclude Include="vertex.h" />
+    <ClInclude Include="Waypoint.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Alignment.cpp" />
@@ -185,6 +187,7 @@
     <ClCompile Include="InputHandler.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="MarchCubes.cpp" />
+    <ClCompile Include="PathFinding.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PositionCheck.cpp" />
     <ClCompile Include="Separation.cpp" />
@@ -195,6 +198,7 @@
     <ClCompile Include="VBCube.cpp" />
     <ClCompile Include="VBGO.cpp" />
     <ClCompile Include="VBSnail.cpp" />
+    <ClCompile Include="WayPoint.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

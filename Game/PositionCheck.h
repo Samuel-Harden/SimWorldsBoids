@@ -14,5 +14,5 @@ protected:
 	void checkPos(float& _axis);
 
 private:
-	const int zoneSize = 200;
+	const int zoneSize = 220;
 };

@@ -11,6 +11,7 @@ Boid::Boid(int& _ID, int& _faction)
 	          faction(_faction),
 	            isActive(false),
 	              newPos(false),
+	                wayPointID(0),
 	acceleration(Vector3::Zero)
 {
 
@@ -155,12 +156,14 @@ void Boid::deactivateBoid()
 
 
 void Boid::run(std::vector<Boid*>& _boids, GameData* _GD,
-	int _boidGroup, BoidData* _boidData, std::vector<Behaviour*> _behaviours, PositionCheck*& _posCheck)
+	int _boidGroup, BoidData* _boidData, std::vector<Behaviour*> _behaviours, PositionCheck*& _posCheck, std::vector<Vector3>& _wpPos)
 {
+	m_currentWayPoint = _wpPos[wayPointID];
+
 	// If this boid, is in the current group to be updated, update behaviours...
 	if (boidID >= _boidGroup && boidID <= (_boidGroup + 100))
 	{
-		flock(_boids, _GD, _boidData,  _behaviours);
+		flock(_boids, _GD, _boidData,  _behaviours, _wpPos);
 	}
 
 	Tick(_GD, _boidData);
@@ -174,27 +177,32 @@ void Boid::run(std::vector<Boid*>& _boids, GameData* _GD,
 
 
 void Boid::flock(std::vector<Boid*>& _boids, GameData* _GD,
-	BoidData*& _boidData, std::vector<Behaviour*> _behaviours)
+	BoidData*& _boidData, std::vector<Behaviour*> _behaviours, std::vector<Vector3>& _wpPos)
 {
+	// Behaviours...
 	Vector3 ali   = _behaviours[0]->calculateBehaviour1(this, _boidData, _boids);    // Alignment
 	Vector3 avoid = _behaviours[1]->calculateBehaviour1(this, _boidData, _boids);    // Avoidance
 	Vector3 pred  = _behaviours[1]->calculateBehaviour2(this, _boidData);            // Avoid Player
 	Vector3 coh   = _behaviours[2]->calculateBehaviour1(this, _boidData, _boids);    // Cohesion
 	Vector3 sep   = _behaviours[3]->calculateBehaviour1(this, _boidData, _boids);    // Seperation
 
+	Vector3 pf    = _behaviours[4]->calculateBehaviour3(this, _boidData, _wpPos);    // Seperation
+
 	// Arbitrarily weight these force
-	sep *= _boidData->sepWeight;
+	sep   *= _boidData->sepWeight;
 	avoid *= _boidData->ffWeight;
-	ali *= _boidData->aliWeight;
-	coh *= _boidData->cohWeight;
+	ali   *= _boidData->aliWeight;
+	coh   *= _boidData->cohWeight;
+	pred  *= _boidData->runWeight;
+	pf    *= _boidData->pathWeight;
 
-	pred *= _boidData->runWeight;
-
+	// add these 'forces' to acceleration...
 	applyForce(sep);
 	applyForce(ali);
 	applyForce(coh);
 	applyForce(avoid);
 	applyForce(pred);
+	applyForce(pf);
 }
 
 
@@ -224,6 +232,20 @@ void Boid::Tick(GameData* _GD, BoidData* _BD)
 
 	// reset acceleration to 0 each cycle
 	acceleration = Vector3::Zero;
+}
+
+
+
+void Boid::setWayPointID(int& _newID)
+{
+	wayPointID = _newID;
+}
+
+
+
+int Boid::getWayPointID() const
+{
+	return wayPointID;
 }
 
 

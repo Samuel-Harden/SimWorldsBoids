@@ -139,7 +139,7 @@ bool InputHandler::Tick(GameData* _GD, BoidManager* _boidManager,
 			!(m_prevKeyboardState[DIK_ESCAPE] & 0x80))
 		{
 			game_state = GameStateEnum::GS_MAIN_MENU;
-			_boidManager->resetPreyBoids();
+			_boidManager->resetBoids();
 			return true;
 		}
 	}
@@ -153,8 +153,14 @@ void InputHandler::playTick(GameData* _GD, BoidManager* _boidManager,
 	FreeCamera* _freeCam)
 {
 	// Mouse inputs...
-	if ((m_mouseState.rgbButtons[0] & 0x80)/* &&
-		!(m_prevMouseState.rgbButtons[0] & 0x80)*/)
+	//if ((m_mouseState.rgbButtons[0] & 0x80)/* &&
+	//	!(m_prevMouseState.rgbButtons[0] & 0x80)*/)
+	//{
+	//	_boidManager->spawnBoid();
+	//}
+
+	if ((m_keyboardState[DIK_B] & 0x80)/* &&
+		!(m_prevKeyboardState[DIK_B] & 0x80)*/)
 	{
 		_boidManager->spawnBoid();
 	}

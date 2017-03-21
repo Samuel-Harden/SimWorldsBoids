@@ -186,6 +186,12 @@
     <ClInclude Include="FileReader.h">
       <Filter>Base\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="Waypoint.h">
+      <Filter>Base\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="PathFinding.h">
+      <Filter>Base\Headers\Boids</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -274,6 +280,12 @@
     </ClCompile>
     <ClCompile Include="FileReader.cpp">
       <Filter>Base\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="WayPoint.cpp">
+      <Filter>Base\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="PathFinding.cpp">
+      <Filter>Base\Source\Boids\Behaviours</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

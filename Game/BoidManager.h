@@ -7,6 +7,7 @@
 #include <d3d11_1.h>
 
 //#include <windows.h>
+#include "SimpleMath.h"
 
 #include <vector>
 #include <memory>
@@ -14,6 +15,7 @@
 
 class BoidData;
 class Boid;
+class WayPoint;
 class FileReader;
 
 class PositionCheck;
@@ -34,7 +36,7 @@ public:
 	void Draw(DrawData* _DD);
 
 	void spawnBoid();
-	void resetPreyBoids();
+	void resetBoids();
 
 	int activeBoids;
 
@@ -46,10 +48,15 @@ public:
 	float& getSepWeight(int _faction);
 	float& getAliWeight(int _faction);
 	float& getCohWeight(int _faction);
+	float& getPathFindingWeight(int _faction);
 	float& getFlightFightWeight(int _faction);
 
 	// Player related
 	float& getRunWeight(int _faction);
+
+	float& getWayPointPosX(int _wayPoint);
+	float& getWayPointPosY(int _wayPoint);
+	float& getWayPointPosZ(int _wayPoint);
 
 
 protected:
@@ -58,9 +65,11 @@ private:
 
 	void createBehaviours();
 	void createBoidData();
+	void createWaypoints(ID3D11Device* _pd3dDevice);
 	void createBoids(ID3D11Device* _pd3dDevice, const int& _maxBoids);
 
 	void updateBoids(GameData* _GD);
+	void updateWayPoints(GameData* _GD);
 
 	std::vector<Boid*> m_boids;
 
@@ -70,6 +79,11 @@ private:
 
 	// Vector to hold containers of faction Variables
 	std::vector<BoidData*> m_boidData;
+
+	// Vector of waypoints
+	std::vector<WayPoint*> m_wayPoints;
+
+	std::vector<DirectX::SimpleMath::Vector3> m_wpPos;
 
 	// Faction Variables
 	BoidData* boidDataRed;
@@ -82,8 +96,11 @@ private:
 
 	Boid* boid;
 
+	WayPoint* wayPoint;
+
 	PositionCheck* m_posCheck;
 
 	int updateGroup;
 	int currentNoBoids;
+	int noWayPoints;
 };

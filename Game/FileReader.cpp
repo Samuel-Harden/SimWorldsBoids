@@ -35,6 +35,7 @@ void FileReader::setData(BoidData* _boidData, std::string& _fileName)
 		_boidData->sepWeight     = data["sepWeight"].as_double();
 		_boidData->runWeight     = data["runWeight"].as_double();
 		_boidData->ffWeight      = data["ffWeight"].as_double();
+		_boidData->pathWeight      = data["pathWeight"].as_double();
 		_boidData->boidMaxSpeed  = data["boidMaxSpeed"].as_double();
 		_boidData->boidMaxForce  = data["boidMaxForce"].as_double();
 		_boidData->neighbourDist = data["neighbourDist"].as_double();
