@@ -43,7 +43,7 @@ TweakBar::TweakBar(ID3D11Device* _pd3dDevice,
 		&_boidManager->getFlightFightWeight(0), "min=-50.0 max=50.0 step=0.1");
 
 	TwAddVarRW(boidVariables, "Red   - Path Finding - (Weight): ", TW_TYPE_FLOAT,
-		&_boidManager->getPathFindingWeight(0), "min=-5.0 max=5.0 step=0.1");
+		&_boidManager->getPathFindingWeight(0), "min=-5.0 max=0.0 step=0.1");
 
 	TwAddVarRW(boidVariables, "Red   - Avoid Player - (Weight): ", TW_TYPE_FLOAT,
 		&_boidManager->getRunWeight(0), "min=-50.0 max=50.0 step=0.1");
@@ -76,7 +76,7 @@ TweakBar::TweakBar(ID3D11Device* _pd3dDevice,
 		&_boidManager->getFlightFightWeight(1), "min=-50.0 max=50.0 step=0.1");
 
 	TwAddVarRW(boidVariables, "Green  - Path Finding - (Weight): ", TW_TYPE_FLOAT,
-		&_boidManager->getPathFindingWeight(1), "min=-5.0 max=5.0 step=0.1");
+		&_boidManager->getPathFindingWeight(1), "min=-5.0 max=0.0 step=0.1");
 
 	TwAddVarRW(boidVariables, "Green  - Avoid Player - (Weight): ", TW_TYPE_FLOAT,
 		&_boidManager->getRunWeight(1), "min=-50.0 max=50.0 step=0.1");
@@ -109,7 +109,7 @@ TweakBar::TweakBar(ID3D11Device* _pd3dDevice,
 		&_boidManager->getFlightFightWeight(2), "min=-50.0 max=50.0 step=0.1");
 
 	TwAddVarRW(boidVariables, "Purple   - Path Finding - (Weight): ", TW_TYPE_FLOAT,
-		&_boidManager->getPathFindingWeight(2), "min=-5.0 max=5.0 step=0.1");
+		&_boidManager->getPathFindingWeight(2), "min=-5.0 max=0.0 step=0.1");
 
 	TwAddVarRW(boidVariables, "Purple   - Avoid Player - (Weight): ", TW_TYPE_FLOAT,
 		&_boidManager->getRunWeight(2), "min=-50.0 max=50.0 step=0.1");

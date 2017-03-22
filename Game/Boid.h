@@ -19,8 +19,8 @@ public:
 	//initialise the Veretx and Index buffers for the Boid
 	void init(ID3D11Device* _GD);
 
-	void Tick(GameData* _GD, BoidData* _BD);
-	void run(std::vector<Boid*>& boids, GameData* _GD, int _boidGroup,
+	void Tick(BoidData* _BD);
+	void run(std::vector<Boid*>& boids, int _boidGroup,
 		BoidData* _boidData, std::vector<Behaviour*> _behaviours,
 		PositionCheck*& _posCheck, std::vector<Vector3>& _wpPos);
 
@@ -42,7 +42,7 @@ protected:
 private:
 
 	// Functions
-	void flock(std::vector<Boid*>& _boids, GameData* _GD, BoidData*& _boidData,
+	void flock(std::vector<Boid*>& _boids, BoidData*& _boidData,
 		std::vector<Behaviour*> _behaviours, std::vector<Vector3>& _wpPos);
 
 	void applyForce(Vector3& force);
@@ -58,8 +58,6 @@ private:
 
 	Vector3 velocity;
 	Vector3 acceleration;
-
-	Vector3 m_currentWayPoint;
 
 	int boidID;
 	int faction;

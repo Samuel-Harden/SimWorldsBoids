@@ -68,7 +68,7 @@ private:
 	void createWaypoints(ID3D11Device* _pd3dDevice);
 	void createBoids(ID3D11Device* _pd3dDevice, const int& _maxBoids);
 
-	void updateBoids(GameData* _GD);
+	void updateBoids();
 	void updateWayPoints(GameData* _GD);
 
 	std::vector<Boid*> m_boids;

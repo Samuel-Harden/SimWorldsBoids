@@ -43,10 +43,12 @@ Vector3 PathFinding::calculateBehaviour3(Boid* _boid, BoidData* _BD, std::vector
 		{
 			if (_boid->getWayPointID() == i)
 			{
+				// Set new waypoint...
 				i++;
+
 				if (i == (_wpPos.size()))
 				{
-					i = 0;
+					i = 0; // reset waypoint after the last one
 				}
 				_boid->setWayPointID(i); // assign next Waypoint...
 				break;
@@ -66,5 +68,6 @@ Vector3 PathFinding::calculateBehaviour3(Boid* _boid, BoidData* _BD, std::vector
 
 		steer = XMVector3ClampLength(steer, 0.0f, _BD->boidMaxSpeed);
 	}
+
 	return steer;
 }

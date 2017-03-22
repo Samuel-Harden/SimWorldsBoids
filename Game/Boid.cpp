@@ -155,18 +155,15 @@ void Boid::deactivateBoid()
 
 
 
-void Boid::run(std::vector<Boid*>& _boids, GameData* _GD,
-	int _boidGroup, BoidData* _boidData, std::vector<Behaviour*> _behaviours, PositionCheck*& _posCheck, std::vector<Vector3>& _wpPos)
+void Boid::run(std::vector<Boid*>& _boids, int _boidGroup, BoidData* _boidData, std::vector<Behaviour*> _behaviours, PositionCheck*& _posCheck, std::vector<Vector3>& _wpPos)
 {
-	m_currentWayPoint = _wpPos[wayPointID];
-
 	// If this boid, is in the current group to be updated, update behaviours...
 	if (boidID >= _boidGroup && boidID <= (_boidGroup + 100))
 	{
-		flock(_boids, _GD, _boidData,  _behaviours, _wpPos);
+		flock(_boids, _boidData,  _behaviours, _wpPos);
 	}
 
-	Tick(_GD, _boidData);
+	Tick(_boidData);
 
 	// Check Bounds...
 	_posCheck->checkPos(m_pos.x);
@@ -176,8 +173,7 @@ void Boid::run(std::vector<Boid*>& _boids, GameData* _GD,
 
 
 
-void Boid::flock(std::vector<Boid*>& _boids, GameData* _GD,
-	BoidData*& _boidData, std::vector<Behaviour*> _behaviours, std::vector<Vector3>& _wpPos)
+void Boid::flock(std::vector<Boid*>& _boids, BoidData*& _boidData, std::vector<Behaviour*> _behaviours, std::vector<Vector3>& _wpPos)
 {
 	// Behaviours...
 	Vector3 ali   = _behaviours[0]->calculateBehaviour1(this, _boidData, _boids);    // Alignment
@@ -214,7 +210,7 @@ void Boid::applyForce(Vector3& force)
 
 
 
-void Boid::Tick(GameData* _GD, BoidData* _BD)
+void Boid::Tick(BoidData* _BD)
 {
 	// update velocity
 	velocity = (velocity + acceleration);

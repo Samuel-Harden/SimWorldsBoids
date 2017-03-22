@@ -1,5 +1,7 @@
 #include "BoidManager.h"
 
+#include <jsoncons/json.hpp>
+
 #include "Boid.h"
 #include "GameData.h"
 #include "DrawData.h"
@@ -17,7 +19,6 @@
 #include "Separation.h"
 #include "PathFinding.h"
 
-#include <jsoncons/json.hpp>
 
 
 BoidManager::BoidManager(ID3D11Device* _pd3dDevice, const int& _maxBoids)
@@ -48,6 +49,8 @@ BoidManager::BoidManager(ID3D11Device* _pd3dDevice, const int& _maxBoids)
 BoidManager::~BoidManager()
 {
 	// Tidy away stuf here
+
+	// delete Boids...
 	for (std::vector<Boid*>::iterator it = m_boids.begin();
 	it != m_boids.end(); it++)
 	{
@@ -57,6 +60,7 @@ BoidManager::~BoidManager()
 
 	m_boids.clear();
 
+	// delete BoidData...
 	for (std::vector<BoidData*>::iterator it = m_boidData.begin();
 	it != m_boidData.end(); it++)
 	{
@@ -64,6 +68,19 @@ BoidManager::~BoidManager()
 		(*it) = nullptr;
 	}
 
+	m_boidData.clear();
+
+	// delete Behaviours...
+	for (std::vector<Behaviour*>::iterator it = m_behaviours.begin();
+	it != m_behaviours.end(); it++)
+	{
+		delete (*it);
+		(*it) = nullptr;
+	}
+
+	m_behaviours.clear();
+
+	// delete waypoints...
 	for (std::vector<WayPoint*>::iterator it = m_wayPoints.begin();
 	it != m_wayPoints.end(); it++)
 	{
@@ -88,7 +105,7 @@ void BoidManager::Tick(GameData* _GD)
 		(*it)->predatorPos = _GD->predatorPos;
 	}
 
-	updateBoids(_GD);
+	updateBoids();
 
 	updateWayPoints(_GD);
 }
@@ -113,16 +130,16 @@ void BoidManager::Draw(DrawData* _DD)
 
 
 
-void BoidManager::updateBoids(GameData* _GD)
+void BoidManager::updateBoids()
 {
-	int j = 0; // J refers to each faction, so that each faction will have the
-	           // same number of boids updated during any one 'tick'
+	int j = 0; // J refers to each faction boidData, each pass should change
+	           // the data being sent through, red, grren and the purple looped...
 
 	for (int i = 0; i < currentNoBoids; i++)
 	{
 		if (m_boids[i]->isActive == true)
 		{
-			m_boids[i]->run(m_boids, _GD, updateGroup, m_boidData[j], m_behaviours, m_posCheck, m_wpPos);
+			m_boids[i]->run(m_boids, updateGroup, m_boidData[j], m_behaviours, m_posCheck, m_wpPos);
 			j++;
 
 			if (j > 2)
@@ -185,6 +202,7 @@ void BoidManager::resetBoids()
 			m_boids[i]->deactivateBoid();
 		}
 	}
+	activeBoids = 0;
 }
 
 
