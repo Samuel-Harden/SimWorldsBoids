@@ -35,7 +35,7 @@ BoidManager::BoidManager(ID3D11Device* _pd3dDevice, const int& _maxBoids)
 
 	m_fileReader = std::make_unique<FileReader>();
 
-	m_posCheck = new PositionCheck(); // NEW needs to be DELETED!
+	m_posCheck = new PositionCheck();
 
 	createWaypoints(_pd3dDevice);
 
@@ -135,17 +135,34 @@ void BoidManager::updateBoids()
 	int j = 0; // J refers to each faction boidData, each pass should change
 	           // the data being sent through, red, grren and the purple looped...
 
+
+	// Update Behaviours first...
 	for (int i = 0; i < currentNoBoids; i++)
 	{
 		if (m_boids[i]->isActive == true)
 		{
 			m_boids[i]->run(m_boids, updateGroup, m_boidData[j], m_behaviours, m_posCheck, m_wpPos);
+
 			j++;
 
 			if (j > 2)
 			{
 				j = 0;
 			}
+		}
+	}
+
+	j = 0;
+	// Then Update all boids with their new data...
+	for (int i = 0; i < currentNoBoids; i++)
+	{
+		m_boids[i]->Tick(m_boidData[j], m_posCheck);
+
+		j++;
+
+		if (j > 2)
+		{
+			j = 0;
 		}
 	}
 
@@ -274,7 +291,6 @@ void BoidManager::createWaypoints(ID3D11Device* _pd3dDevice)
 		m_wpPos.push_back(wayPoint->getPos());
 		m_wayPoints.push_back(wayPoint);
 	}
-
 }
 
 

@@ -10,7 +10,6 @@ WayPoint::WayPoint()
 {
 	// Set random starting positon, inside the Designated zone
 	setRandPos();
-	m_scale = Vector3(2.0f, 2.0f, 2.0f);
 }
 
 

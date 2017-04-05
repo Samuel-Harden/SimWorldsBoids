@@ -143,7 +143,8 @@ Game::~Game()
 	VBGO::CleanUp();
 
 	//get rid of the game objects here
-	for (list<GameObject *>::iterator it = m_GameObjects.begin(); it != m_GameObjects.end(); it++)
+	for (list<GameObject *>::iterator it = m_GameObjects.begin();
+	it != m_GameObjects.end(); it++)
 	{
 		delete (*it);
 	}
@@ -209,11 +210,13 @@ void Game::PlayTick()
 		//lock the cursor to the centre of the window
 		RECT window;
 		GetWindowRect(m_hWnd, &window);
-		SetCursorPos((window.left + window.right) >> 1, (window.bottom + window.top) >> 1);
+		SetCursorPos((window.left + window.right) >> 1,
+			(window.bottom + window.top) >> 1);
 	}
 
 	//update all objects
-	for (list<GameObject *>::iterator it = m_GameObjects.begin(); it != m_GameObjects.end(); it++)
+	for (list<GameObject *>::iterator it = m_GameObjects.begin();
+	it != m_GameObjects.end(); it++)
 	{
 		(*it)->Tick(m_GD);
 	}
@@ -242,12 +245,14 @@ void Game::Draw(ID3D11DeviceContext* _pd3dImmediateContext)
 		displayMainMenu();
 	}
 
-	if (game_state == GameStateEnum::GS_PLAY_GAME || game_state == GameStateEnum::GS_PAUSE)
+	if (game_state == GameStateEnum::GS_PLAY_GAME ||
+		game_state == GameStateEnum::GS_PAUSE)
 	{
 		m_boidManager->Draw(m_DD);
 
 		//draw all objects
-		for (list<GameObject *>::iterator it = m_GameObjects.begin(); it != m_GameObjects.end(); it++)
+		for (list<GameObject *>::iterator it = m_GameObjects.begin();
+		it != m_GameObjects.end(); it++)
 		{
 			(*it)->Draw(m_DD);
 		}

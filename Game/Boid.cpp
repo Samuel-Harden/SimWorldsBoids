@@ -11,7 +11,7 @@ Boid::Boid(int& _ID, int& _faction)
 	          faction(_faction),
 	            isActive(false),
 	              newPos(false),
-	                wayPointID(0),
+	              wayPointID(0),
 	acceleration(Vector3::Zero)
 {
 
@@ -155,25 +155,21 @@ void Boid::deactivateBoid()
 
 
 
-void Boid::run(std::vector<Boid*>& _boids, int _boidGroup, BoidData* _boidData, std::vector<Behaviour*> _behaviours, PositionCheck*& _posCheck, std::vector<Vector3>& _wpPos)
+void Boid::run(std::vector<Boid*>& _boids, int _boidGroup, BoidData* _boidData,
+	std::vector<Behaviour*> _behaviours, PositionCheck*& _posCheck,
+	std::vector<Vector3>& _wpPos)
 {
 	// If this boid, is in the current group to be updated, update behaviours...
 	if (boidID >= _boidGroup && boidID <= (_boidGroup + 100))
 	{
 		flock(_boids, _boidData,  _behaviours, _wpPos);
 	}
-
-	Tick(_boidData);
-
-	// Check Bounds...
-	_posCheck->checkPos(m_pos.x);
-	_posCheck->checkPos(m_pos.y);
-	_posCheck->checkPos(m_pos.z);
 }
 
 
 
-void Boid::flock(std::vector<Boid*>& _boids, BoidData*& _boidData, std::vector<Behaviour*> _behaviours, std::vector<Vector3>& _wpPos)
+void Boid::flock(std::vector<Boid*>& _boids, BoidData*& _boidData,
+	std::vector<Behaviour*> _behaviours, std::vector<Vector3>& _wpPos)
 {
 	// Behaviours...
 	Vector3 ali   = _behaviours[0]->calculateBehaviour1(this, _boidData, _boids);    // Alignment
@@ -210,7 +206,7 @@ void Boid::applyForce(Vector3& force)
 
 
 
-void Boid::Tick(BoidData* _BD)
+void Boid::Tick(BoidData* _BD, PositionCheck*& _posCheck)
 {
 	// update velocity
 	velocity = (velocity + acceleration);
@@ -228,6 +224,11 @@ void Boid::Tick(BoidData* _BD)
 
 	// reset acceleration to 0 each cycle
 	acceleration = Vector3::Zero;
+
+	// Check Bounds...
+	_posCheck->checkPos(m_pos.x);
+	_posCheck->checkPos(m_pos.y);
+	_posCheck->checkPos(m_pos.z);
 }
 
 

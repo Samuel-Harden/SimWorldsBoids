@@ -19,7 +19,7 @@ public:
 	//initialise the Veretx and Index buffers for the Boid
 	void init(ID3D11Device* _GD);
 
-	void Tick(BoidData* _BD);
+	void Tick(BoidData* _BD, PositionCheck*& _posCheck);
 	void run(std::vector<Boid*>& boids, int _boidGroup,
 		BoidData* _boidData, std::vector<Behaviour*> _behaviours,
 		PositionCheck*& _posCheck, std::vector<Vector3>& _wpPos);

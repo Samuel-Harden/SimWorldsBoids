@@ -21,31 +21,31 @@ TweakBar::TweakBar(ID3D11Device* _pd3dDevice,
 	TwAddButton(boidVariables, "comment1", NULL, NULL, " label='Red Faction: ' ");
 
 	// RED FACTION VARIABLES
-	TwAddVarRW(boidVariables, "Red   - BoidSpeed: ", TW_TYPE_FLOAT,
+	TwAddVarRW(boidVariables, "Red  - BoidSpeed: ", TW_TYPE_FLOAT,
 		&_boidManager->getBoidSpeed(0), "min=0.1 max=1.0 step=0.1");
 
-	TwAddVarRW(boidVariables, "Red   - View Distance: ", TW_TYPE_FLOAT,
+	TwAddVarRW(boidVariables, "Red  - View Distance: ", TW_TYPE_FLOAT,
 		&_boidManager->getNeighbourDist(0), "min=0.0 max=500.0 step=1.0");
 
-	TwAddVarRW(boidVariables, "Red   - Desired Seperation: ", TW_TYPE_FLOAT,
+	TwAddVarRW(boidVariables, "Red  - Desired Seperation: ", TW_TYPE_FLOAT,
 		&_boidManager->getDesiredSeperation(0), "min=0.0 max=10.0 step=0.1");
 
-	TwAddVarRW(boidVariables, "Red   - Separation - (Weight): ", TW_TYPE_FLOAT,
+	TwAddVarRW(boidVariables, "Red  - Separation - (Weight): ", TW_TYPE_FLOAT,
 		&_boidManager->getSepWeight(0), "min=-50.0 max=50.0 step=0.1");
 
-	TwAddVarRW(boidVariables, "Red   - Alignment - (Weight): ", TW_TYPE_FLOAT,
+	TwAddVarRW(boidVariables, "Red  - Alignment - (Weight): ", TW_TYPE_FLOAT,
 		&_boidManager->getAliWeight(0), "min=-50.0 max=50.0 step=0.1");
 
-	TwAddVarRW(boidVariables, "Red   - Cohesion - (Weight): ", TW_TYPE_FLOAT,
+	TwAddVarRW(boidVariables, "Red  - Cohesion - (Weight): ", TW_TYPE_FLOAT,
 		&_boidManager->getCohWeight(0), "min=-50.0 max=50.0 step=0.1");
 
-	TwAddVarRW(boidVariables, "Red   - Fight/Flight - (Weight): ", TW_TYPE_FLOAT,
+	TwAddVarRW(boidVariables, "Red  - Fight/Flight - (Weight): ", TW_TYPE_FLOAT,
 		&_boidManager->getFlightFightWeight(0), "min=-50.0 max=50.0 step=0.1");
 
-	TwAddVarRW(boidVariables, "Red   - Path Finding - (Weight): ", TW_TYPE_FLOAT,
+	TwAddVarRW(boidVariables, "Red  - Path Finding - (Weight): ", TW_TYPE_FLOAT,
 		&_boidManager->getPathFindingWeight(0), "min=-5.0 max=0.0 step=0.1");
 
-	TwAddVarRW(boidVariables, "Red   - Avoid Player - (Weight): ", TW_TYPE_FLOAT,
+	TwAddVarRW(boidVariables, "Red  - Avoid Player - (Weight): ", TW_TYPE_FLOAT,
 		&_boidManager->getRunWeight(0), "min=-50.0 max=50.0 step=0.1");
 
 	TwAddSeparator(boidVariables, "sep1", NULL);
@@ -75,10 +75,10 @@ TweakBar::TweakBar(ID3D11Device* _pd3dDevice,
 	TwAddVarRW(boidVariables, "Green - Fight/Flight - (Weight): ", TW_TYPE_FLOAT,
 		&_boidManager->getFlightFightWeight(1), "min=-50.0 max=50.0 step=0.1");
 
-	TwAddVarRW(boidVariables, "Green  - Path Finding - (Weight): ", TW_TYPE_FLOAT,
+	TwAddVarRW(boidVariables, "Green - Path Finding - (Weight): ", TW_TYPE_FLOAT,
 		&_boidManager->getPathFindingWeight(1), "min=-5.0 max=0.0 step=0.1");
 
-	TwAddVarRW(boidVariables, "Green  - Avoid Player - (Weight): ", TW_TYPE_FLOAT,
+	TwAddVarRW(boidVariables, "Green - Avoid Player - (Weight): ", TW_TYPE_FLOAT,
 		&_boidManager->getRunWeight(1), "min=-50.0 max=50.0 step=0.1");
 
 	TwAddSeparator(boidVariables, "sep2", NULL);
@@ -87,31 +87,31 @@ TweakBar::TweakBar(ID3D11Device* _pd3dDevice,
 	TwAddButton(boidVariables, "comment3", NULL, NULL, " label='Purple Faction: ' ");
 
 	//Purple FACTION VARIABLES
-	TwAddVarRW(boidVariables, "Purple   - BoidSpeed: ", TW_TYPE_FLOAT,
+	TwAddVarRW(boidVariables, "Purple - BoidSpeed: ", TW_TYPE_FLOAT,
 		&_boidManager->getBoidSpeed(2), "min=0.1 max=1.0 step=0.1");
 
-	TwAddVarRW(boidVariables, "Purple   - View Distance: ", TW_TYPE_FLOAT,
+	TwAddVarRW(boidVariables, "Purple - View Distance: ", TW_TYPE_FLOAT,
 		&_boidManager->getNeighbourDist(2), "min=0.0 max=500.0 step=1.0");
 
-	TwAddVarRW(boidVariables, "Purple   - Desired Seperation: ", TW_TYPE_FLOAT,
+	TwAddVarRW(boidVariables, "Purple - Desired Seperation: ", TW_TYPE_FLOAT,
 		&_boidManager->getDesiredSeperation(2), "min=0.0 max=10.0 step=0.1");
 
-	TwAddVarRW(boidVariables, "Purple   - Separation - (Weight): ", TW_TYPE_FLOAT,
+	TwAddVarRW(boidVariables, "Purple - Separation - (Weight): ", TW_TYPE_FLOAT,
 		&_boidManager->getSepWeight(2), "min=-50.0 max=50.0 step=0.1");
 
-	TwAddVarRW(boidVariables, "Purple   - Alignment - (Weight): ", TW_TYPE_FLOAT,
+	TwAddVarRW(boidVariables, "Purple - Alignment - (Weight): ", TW_TYPE_FLOAT,
 		&_boidManager->getAliWeight(2), "min=-50.0 max=50.0 step=0.1");
 
-	TwAddVarRW(boidVariables, "Purple   - Cohesion - (Weight): ", TW_TYPE_FLOAT,
+	TwAddVarRW(boidVariables, "Purple - Cohesion - (Weight): ", TW_TYPE_FLOAT,
 		&_boidManager->getCohWeight(2), "min=-50.0 max=50.0 step=0.1");
 
-	TwAddVarRW(boidVariables, "Purple   - Fight/Flight - (Weight): ", TW_TYPE_FLOAT,
+	TwAddVarRW(boidVariables, "Purple - Fight/Flight - (Weight): ", TW_TYPE_FLOAT,
 		&_boidManager->getFlightFightWeight(2), "min=-50.0 max=50.0 step=0.1");
 
-	TwAddVarRW(boidVariables, "Purple   - Path Finding - (Weight): ", TW_TYPE_FLOAT,
+	TwAddVarRW(boidVariables, "Purple - Path Finding - (Weight): ", TW_TYPE_FLOAT,
 		&_boidManager->getPathFindingWeight(2), "min=-5.0 max=0.0 step=0.1");
 
-	TwAddVarRW(boidVariables, "Purple   - Avoid Player - (Weight): ", TW_TYPE_FLOAT,
+	TwAddVarRW(boidVariables, "Purple - Avoid Player - (Weight): ", TW_TYPE_FLOAT,
 		&_boidManager->getRunWeight(2), "min=-50.0 max=50.0 step=0.1");
 
 	TwAddSeparator(boidVariables, "sep3", NULL);
